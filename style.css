@@ -1,0 +1,207 @@
+*, *::after, *::before{
+    box-sizing: border-box;
+}
+
+body{
+    background-color: #36393F;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 200ms ease-in-out;
+    border: 1px solid black;
+    border-radius: 10px;
+    z-index: 10;
+    background-color: white;
+    width: 500px;
+    max-width: 80%;
+    width: 500px;
+    height: 400px;
+}
+
+.modal.active{
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid black;
+}
+
+.modal-header .title{
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.modal-header .close-button{
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.modal-body{
+    padding: 10px 15px;
+
+}
+
+
+
+
+.modal2 {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 200ms ease-in-out;
+    border: 1px solid black;
+    border-radius: 10px;
+    z-index: 10;
+    background-color: white;
+    width: 500px;
+    max-width: 80%;
+    width: 500px;
+    height: 400px;
+}
+
+.modal2.active{
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal2-header {
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid black;
+}
+
+.modal2-header .title2{
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.modal2-header .close-button2{
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.modal-body2{
+    padding: 10px 15px;
+
+}
+
+#overlay2{
+    position: fixed;
+    opacity: 0;
+    transition: 200ms ease-in-out;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .5);
+    pointer-events: none;
+}
+
+#overlay{
+    position: fixed;
+    opacity: 0;
+    transition: 200ms ease-in-out;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .5);
+    pointer-events: none;
+}
+
+#overlay2.active{
+    opacity: 1;
+    pointer-events: all;
+}
+
+#overlay.active{
+    opacity: 1;
+    pointer-events: all;
+}
+
+#email{
+    height: 30px;
+    width: 400px;
+    display: block;
+    margin-bottom: 30px;
+}
+
+#password{
+    height: 30px;
+    width: 400px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+#AHAC{
+    display: block;
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+    font-size: x-small;
+}
+
+#signIn{
+    background-color: aqua;
+    height: 50px;
+    width: 400px;
+    cursor: pointer;
+}
+
+
+#email2{
+    display: block;
+    height: 30px;
+    width: 400px;
+    margin-bottom: 30px;
+}
+
+#password2{
+    display: block;
+    height: 30px;
+    width: 400px;
+    margin-bottom: 10px;
+}
+
+#logIn{
+    background-color: aqua;
+    height: 50px;
+    width: 400px;
+    cursor:pointer;
+}
+
+#signInBtn{
+    cursor: pointer;
+    background-color: darkmagenta;
+    border-radius: 10px;
+    height:50px;
+    width: 100px;
+    border: 3px solid black;
+}
+
+#logInBtn{
+    cursor: pointer;
+    background-color: darkmagenta;
+    border-radius: 10px;
+    height:50px;
+    width: 100px;
+    border: 3px solid black;
+}

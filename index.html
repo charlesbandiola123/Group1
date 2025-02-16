@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button data-modal-target="#modal" id="signInBtn">SIGN IN</button>
+    <div class="modal" id="modal">
+        <div class="modal-header">
+            <div class="title">SIGN UP</div>
+            <button data-close-button class="close-button">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="email" id="email" placeholder="Email Address...">
+            <input type="password" id="password" placeholder="Password...">
+            <p id="AHAC">Already have an account? Log In!</p>
+            <button id="signIn">SIGN UP</button>
+            
+        </div>
+    </div>
+    <div id="overlay"></div>
+
+
+
+    <button data-modal-target2="#modal2" id="logInBtn">LOG IN</button>
+    <div class="modal2" id="modal2">
+        <div class="modal2-header">
+            <div class="title2">LOG IN</div>
+            <button data-close-button2 class="close-button2">&times;</button>
+        </div>
+        <div class="modal-body2">
+            <input type="email" id="email2" placeholder="Email Address...">
+            <input type="password" id="password2" placeholder="Password...">
+            <button id="logIn">LOG IN</button>
+        </div>
+    </div>
+    <div id="overlay2"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
