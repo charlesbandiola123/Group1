@@ -8,37 +8,6 @@ const AHAC = document.getElementById('AHAC');
 const signInBtn = document.getElementById('signIn');
 const logIn = document.getElementById('logIn');
 
-logIn.addEventListener('mouseover', () => {
-    logIn.style.backgroundColor = "blue"
-})
-
-logIn.addEventListener('mouseout', () => {
-    logIn.style.backgroundColor = "aqua"
-})
-
-signInBtn.addEventListener('mouseover', () => {
-    signInBtn.style.backgroundColor = "blue"
-})
-
-signInBtn.addEventListener('mouseout', () => {
-    signInBtn.style.backgroundColor = "aqua"
-})
-
-signInBtn.addEventListener('click', () => {
-    signInBtn.style.backgroundColor = "aqua"
-})
-
-signInBtn.addEventListener('mouseup', () => {
-    signInBtn.style.backgroundColor = "blue"
-})
-
-AHAC.addEventListener('mouseover', () => {
-    AHAC.style.color = "aqua"
-})
-
-AHAC.addEventListener('mouseout', () => {
-    AHAC.style.color = "blue"
-})
 
 AHAC.addEventListener('click', () => {
     openModal2(modal2)
@@ -102,3 +71,4 @@ function closeModal2(modal){
     modal.classList.remove('active');
     overlay2.classList.remove('active');
 }
+
