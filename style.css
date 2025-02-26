@@ -2,10 +2,6 @@
     box-sizing: border-box;
 }
 
-body{
-    background-color: #36393F;
-}
-
 .modal {
     position: fixed;
     top: 50%;
@@ -15,10 +11,10 @@ body{
     border: 1px solid black;
     border-radius: 10px;
     z-index: 10;
-    background-color: white;
+    background-color: #8D72E1;
     width: 500px;
     max-width: 80%;
-    width: 500px;
+    width: 350px;
     height: 400px;
 }
 
@@ -31,7 +27,9 @@ body{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid black;
+    background: hsla(0, 0%, 100%, 0.507);
+    border-bottom: 2px solid rgb(255, 255, 255);
+    background: linear-gradient(to right, #8D72E1, #6C4AB6);
 }
 
 .modal-header .title{
@@ -65,10 +63,10 @@ body{
     border: 1px solid black;
     border-radius: 10px;
     z-index: 10;
-    background-color: white;
+    background-color: #8D72E1;
     width: 500px;
     max-width: 80%;
-    width: 500px;
+    width: 350px;
     height: 400px;
 }
 
@@ -81,7 +79,9 @@ body{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid black;
+    background: hsla(0, 0%, 100%, 0.507);
+    border-bottom: 2px solid rgb(255, 255, 255);
+    background: linear-gradient(to right, #8D72E1, #6C4AB6);
 }
 
 .modal2-header .title2{
@@ -139,69 +139,114 @@ body{
 
 #email{
     height: 30px;
-    width: 400px;
-    display: block;
+    width: 315px;
+    
     margin-bottom: 30px;
 }
 
 #password{
     height: 30px;
-    width: 400px;
-    display: block;
+    width: 315px;
+    
     margin-bottom: 5px;
 }
 
 #AHAC{
-    display: block;
+    
     cursor: pointer;
     color: blue;
     text-decoration: underline;
     font-size: x-small;
 }
 
-#signIn{
+#signin{
     background-color: aqua;
     height: 50px;
     width: 400px;
     cursor: pointer;
+    
 }
 
 
 #email2{
-    display: block;
+    
     height: 30px;
-    width: 400px;
+    width: 315px;
     margin-bottom: 30px;
 }
 
 #password2{
-    display: block;
+    
     height: 30px;
-    width: 400px;
+    width: 315px;
     margin-bottom: 10px;
 }
 
-#logIn{
+#login{
     background-color: aqua;
     height: 50px;
     width: 400px;
     cursor:pointer;
 }
 
-#signInBtn{
-    cursor: pointer;
-    background-color: darkmagenta;
-    border-radius: 10px;
-    height:50px;
-    width: 100px;
-    border: 3px solid black;
+
+
+
+
+
+    .header {
+    display: flex;
+    align-items: center; 
+    gap: 10px;
+    padding: 10px;
+    background: hsla(0, 0%, 100%, 0.507);
+    border-bottom: 2px solid rgb(255, 255, 255);
+    background: linear-gradient(to right, #8D72E1, #6C4AB6);
 }
 
-#logInBtn{
+.logo {
+    width: 80px;
+    height: auto;
+}
+
+.title {
+    font-size: 50px;
+    font-family: fantasy;
+    color: white;
+}
+.button-container {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    border: 2px solid white;
     cursor: pointer;
-    background-color: darkmagenta;
-    border-radius: 10px;
-    height:50px;
-    width: 100px;
-    border: 3px solid black;
+    border-radius: 50px;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+}
+.create{
+    border-radius: 50px;
+    width: 250px;
+    height: 100px;
+    color: rgb(255, 255, 255);
+    background-color: #8D72E1;
+    font-size: 35px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+.ftre1 {
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    margin-top:50px;
+    height: 120px; 
+}
+
+body{
+    margin: 0;
+    background: linear-gradient(to right, #8D72E1, #e0b7fc);
+
 }
