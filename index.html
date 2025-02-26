@@ -3,11 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Quizzler</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <button data-modal-target="#modal" id="signInBtn">SIGN IN</button>
+
+    <div class="header">
+        <img src="c:\Users\User\Downloads\D (5).png " alt="Logo" class="logo">
+        <span class="title">QUIZZLER</span>
+        <div class="button-container">
+            <button data-modal-target="#modal" id="signInBtn">Sign In</button>
+            <button data-modal-target2="#modal2" id="logInBtn">Log In</button>
+        </div>
+    </div>
+    <br>
+    <div class="ftre1">
+        <a href="c:\Users\User\Downloads\newpage.html">
+            <button class="create">CREATE</button>
+        </a>
+        
+    </div>
+
+
+
+    <div id="container">
+    
     <div class="modal" id="modal">
         <div class="modal-header">
             <div class="title">SIGN UP</div>
@@ -25,7 +45,7 @@
 
 
 
-    <button data-modal-target2="#modal2" id="logInBtn">LOG IN</button>
+    
     <div class="modal2" id="modal2">
         <div class="modal2-header">
             <div class="title2">LOG IN</div>
@@ -38,7 +58,12 @@
         </div>
     </div>
     <div id="overlay2"></div>
+</div>
 
-    <script src="script.js"></script>
+
+
+
+
+    <script src="signInAndLogIn.js"></script>
 </body>
 </html>
