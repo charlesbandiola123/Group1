@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="quiaalerlogo.ico"> 
+    <title>Project View</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #8D72E1, #e0b7fc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .a4-container {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            padding: 20mm;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            word-wrap: break-word;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #8D72E1;
+            color: white;
+        }
+        td:first-child {
+            width: 25%;
+        }
+        td:last-child {
+            width: 75%;
+        }
+        .print-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #8D72E1;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        @media print {
+            body {
+                background: none;
+            }
+            .print-btn {
+                display: none;
+            }
+            .a4-container {
+                box-shadow: none;
+                width: 100%;
+                height: 100%;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="a4-container">
+        <h1 id="projectTitle">Project Title</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Term</th>
+                    <th>Definition</th>
+                </tr>
+            </thead>
+            <tbody id="termsTable">
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+        <button class="print-btn" onclick="window.print()">Print as PDF</button>
+    </div>
+
+    <script>
+        window.onload = function () {
+            let project = JSON.parse(localStorage.getItem("selectedProject"));
+            if (!project) {
+                document.body.innerHTML = "<h1>No project selected.</h1>";
+                return;
+            }
+            
+            document.getElementById("projectTitle").textContent = project.title;
+            let tableBody = document.getElementById("termsTable");
+            project.terms.forEach(({ term, definition }) => {
+                let row = document.createElement("tr");
+                row.innerHTML = `<td>${term}</td><td>${definition}</td>`;
+                tableBody.appendChild(row);
+            });
+        };
+    </script>
+</body>
+</html>

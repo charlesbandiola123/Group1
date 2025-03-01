@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a Term</title>
+    <link rel="icon" type="image/x-icon" href="quiaalerlogo.ico"> 
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to right, #8D72E1, #6C4AB6);
+            color: white;
+            padding-top: 100px; /* Prevent overlap with fixed header */
+        }
+
+        .header1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center; 
+            gap: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #8D72E1, #6C4AB6);
+            border-bottom: 2px solid white;
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+        }
+
+        .title {
+            font-size: 50px;
+            font-family: fantasy;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            width: 1000px;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.8);
+            color: black;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #45a049;
+        }
+
+        .add-btn {
+            background: #008CBA;
+        }
+
+        .add-btn:hover {
+            background: #0073a5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header1">
+        <img src="D (5).ico" alt="Logo" class="logo">
+        <span class="title">QUIZZLER</span>
+    </div>
+
+    <div class="container" id="termContainer">
+        <h2>Add a New Term</h2>
+
+        <div class="term-set">
+            <input type="text" placeholder="Enter Term">
+            <textarea placeholder="Enter Definition"></textarea>
+        </div>
+
+        <button class="btn add-btn" onclick="addTerm()">Add Another Term</button>
+        <button class="btn" id="saveBtn">Save</button>
+    </div>
+
+    <script>
+        function addTerm() {
+            const container = document.getElementById('termContainer');
+            const termSet = document.createElement('div'); 
+            termSet.classList.add('term-set');
+
+            termSet.innerHTML = `
+                <input type="text" placeholder="Enter Term">
+                <textarea placeholder="Enter Definition"></textarea>
+            `;
+
+            container.insertBefore(termSet, container.children[container.children.length - 2]);
+        }
+
+        document.getElementById("saveBtn").addEventListener("click", function () {
+            let projects = JSON.parse(localStorage.getItem("projects")) || []; // Get existing projects or empty array
+            let newProject = []; // Store terms for the new project
+
+            document.querySelectorAll(".term-set").forEach(set => {
+                let term = set.querySelector("input").value.trim();
+                let definition = set.querySelector("textarea").value.trim();
+
+                if (term && definition) {
+                    newProject.push({ term, definition });
+                }
+            });
+
+            if (newProject.length > 0) {
+                projects.push(newProject); // Add new project to the list
+                localStorage.setItem("projects", JSON.stringify(projects)); // Save to localStorage
+            }
+
+            window.location.href = "frontpage.html"; // Redirect back to frontpage.html
+        });
+    </script>
+</body>
+</html>
