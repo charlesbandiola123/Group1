@@ -7,7 +7,11 @@ const overlay2 = document.getElementById('overlay2');
 const AHAC = document.getElementById('AHAC');
 const signInBtn = document.getElementById('signIn');
 const logIn = document.getElementById('logIn');
+const createBtn = document.getElementById("create");
 
+createBtn.addEventListener('click', () => {
+    window.location.href = "addpage.html";
+})
 
 AHAC.addEventListener('click', () => {
     openModal2(modal2)
