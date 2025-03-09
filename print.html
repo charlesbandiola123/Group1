@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Project</title>
+    <link rel="icon" type="image/x-icon" href="logo.ico"> 
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #8D72E1, #e0b7fc);
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: linear-gradient(to right, #8D72E1, #6C4AB6);
+            border-bottom: 2px solid white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 60px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .title {
+            font-size: 50px;
+            font-family: fantasy;
+            color: white;
+        }
+
+        .toolbar-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: flex-start;
+            margin-left: 580px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .toolbar button {
+            background: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            min-width: 150px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            z-index: 1;
+            text-align: left;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        #generateQuizBtn {
+            display: block;
+            margin: 120px auto 20px auto;
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #6C4AB6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #generateQuizBtn:hover {
+            background-color: #8D72E1;
+        }
+
+        .paper {
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid black;
+            width: 8.27in;
+            height: 11.69in;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid black;
+        }
+
+        th {
+            background: #b6b6b6;
+        }
+
+        td {
+            contenteditable: true;
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 1in;
+            }
+
+            body {
+                background: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .header, #generateQuizBtn {
+                display: none;
+            }
+
+            .paper {
+                width: 100%;
+                height: auto;
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-title">
+            <img src="logo.ico" alt="Logo" class="logo">
+            <span class="title">QUIZZLER</span>
+        </div>
+
+        <div class="toolbar-container">
+            <div class="toolbar">
+                <div class="dropdown">
+                    <button>Font</button>
+                    <div class="dropdown-content">
+                        <label for="fontFamily">Font:</label>
+                        <select id="fontFamily" onchange="changeFont()">
+                            <option value="Arial">Arial</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Courier New">Courier New</option>
+                        </select>
+                        <br>
+                        <label for="fontSize">Size:</label>
+                        <select id="fontSize" onchange="changeFont()">
+                            <option value="12px">12</option>
+                            <option value="14px">14</option>
+                            <option value="16px">16</option>
+                            <option value="18px">18</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <div class="dropdown">
+                    <button>Layout</button>
+                    <div class="dropdown-content">
+                        <label for="paperSize">Paper Size:</label>
+                        <select id="paperSize" onchange="adjustPaper()">
+                            <option value="a4" selected>A4</option>
+                            <option value="letter">Letter</option>
+                            <option value="long">Long</option>
+                        </select>
+                        <br>
+                        <label for="orientation">Orientation:</label>
+                        <select id="orientation" onchange="adjustPaper()">
+                            <option value="portrait" selected>Portrait</option>
+                            <option value="landscape">Landscape</option>
+                        </select>
+                        <br>
+                        <label for="margin">Margins:</label>
+                        <select id="margin" onchange="adjustMargins()">
+                            <option value="1in" selected>Normal</option>
+                            <option value="0.5in">Narrow</option>
+                            <option value="1.5in">Wide</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <button onclick="window.print()">Print</button>
+            </div>
+        </div>
+    </div>    
+
+    <button id="generateQuizBtn">Generate Quiz</button>
+
+    <div id="paper" class="paper">
+        <h2>Project Details</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Term</th>
+                    <th>Definition</th>
+                </tr>
+            </thead>
+            <tbody id="projectTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function loadProject() {
+            let project = JSON.parse(localStorage.getItem("selectedProject"));
+            if (project && project.length > 0) {
+                let tableBody = document.getElementById("projectTableBody");
+                tableBody.innerHTML = "";
+                project.forEach(item => {
+                    let row = document.createElement("tr");
+                    row.innerHTML = `<td contenteditable="true">${item.term}</td>
+                                     <td contenteditable="true">${item.definition}</td>`;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                document.getElementById("paper").innerHTML = "<h2>No project selected.</h2>";
+            }
+        }
+
+        function changeFont() {
+            let fontFamily = document.getElementById("fontFamily").value;
+            let fontSize = document.getElementById("fontSize").value;
+            document.getElementById("paper").style.fontFamily = fontFamily;
+            document.getElementById("paper").style.fontSize = fontSize;
+        }
+
+        function adjustPaper() {
+            let paper = document.getElementById("paper");
+            let size = document.getElementById("paperSize").value;
+            let orientation = document.getElementById("orientation").value;
+            paper.style.width = size === "a4" ? (orientation === "portrait" ? "8.27in" : "11.69in") : (size === "letter" ? "8.5in" : "8.5in");
+            paper.style.height = size === "a4" ? (orientation === "portrait" ? "11.69in" : "8.27in") : (size === "letter" ? "11in" : "13in");
+        }
+
+        window.onload = loadProject;
+    </script>
+
+</body>
+</html>
