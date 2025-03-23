@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quizzler</title>
-    <link rel="icon" type="image/x-icon" href="logo.ico"> 
-
+    <link rel="icon" type="image/x-icon" href="logo.ico">
     <style>
         * {
             margin: 0;
@@ -182,91 +181,106 @@
             position: absolute;
             right: 10px;
         }
-
-
     </style>
 </head>
 <body>
 
-    <div class="header1">
-        <img src="logo.ico" alt="Logo" class="logo">
-        <span class="title">QUIZZLER</span>
+<div class="header1">
+    <img src="logo.ico" alt="Logo" class="logo">
+    <span class="title">QUIZZLER</span>
+</div>
+
+<img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()">
+
+<div class="wrapper">
+    <div class="title-container">
+        <h2>TITLE</h2>
+        <input type="text" id="quizTitle" placeholder="Enter Title">
     </div>
 
-    <img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()">
-
-    <div class="wrapper">
-        <div class="title-container">
-            <h2>TITLE</h2>
-            <input type="text" id="quizTitle" placeholder="Enter Title">
-        </div>
-
-        <div class="container">
-            <h2>ADD TERM AND DEFINITION</h2>
-            <input type="text" id="termInput" placeholder="Enter Term">
-            <textarea id="definitionInput" placeholder="Enter Definition"></textarea>
-            <button class="btn add-btn" onclick="addTerm()">Add</button>
-            <button class="btn" id="saveBtn">Save</button>
-        </div>
-
-        <button class="toggle-btn" onclick="toggleContainer()">▲ Show Saved Terms</button>
-        <div class="grey-container" id="greyContainer">
-            <br>
-            <div style="display: flex; align-items: center; justify-content: center; position: relative; width: 100%;">
-                <h2 style="text-align: center; flex-grow: 1;">SAVED TERMS</h2>
-                <button class="menu-btn" onclick="openMenu()">☰</button>
-            </div>            
-            
-            <table class="term-table" id="termTable">
-                <tr>
-                    <th>Term</th>
-                    <th>Definition</th>
-                </tr>
-            </table>
-        </div>
+    <div class="container">
+        <h2>ADD TERM AND DEFINITION</h2>
+        <input type="text" id="termInput" placeholder="Enter Term">
+        <textarea id="definitionInput" placeholder="Enter Definition"></textarea>
+        <button class="btn add-btn" onclick="addTerm()">Add</button>
+        <button class="btn" id="saveBtn" type="button">Save</button>
     </div>
 
-    <script>
-        function goBack() {
-            window.location.href = "frontpage.html";
+    <button class="toggle-btn" onclick="toggleContainer()">▲ Show Saved Terms</button>
+    <div class="grey-container" id="greyContainer">
+        <br>
+        <div style="display: flex; align-items: center; justify-content: center; position: relative; width: 100%;">
+            <h2 style="text-align: center; flex-grow: 1;">SAVED TERMS</h2>
+            <button class="menu-btn" onclick="openMenu()">☰</button>
+        </div>
+        <table class="term-table" id="termTable">
+            <tr>
+                <th>Term</th>
+                <th>Definition</th>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script>
+    function goBack() {
+        window.location.href = "frontpage.html";
+    }
+
+    function addTerm() {
+        const termInput = document.getElementById("termInput");
+        const definitionInput = document.getElementById("definitionInput");
+        const termTable = document.getElementById("termTable");
+
+        const term = termInput.value.trim();
+        const definition = definitionInput.value.trim();
+
+        if (term === "" || definition === "") {
+            alert("Please enter both a term and a definition.");
+            return;
         }
 
-        function addTerm() {
-            const termInput = document.getElementById("termInput");
-            const definitionInput = document.getElementById("definitionInput");
-            const termTable = document.getElementById("termTable");
+        // Save the term and definition to local storage
+        const terms = JSON.parse(localStorage.getItem("terms")) || [];
+        terms.push({ term: term, definition: definition });
+        localStorage.setItem("terms", JSON.stringify(terms));
 
-            const term = termInput.value.trim();
-            const definition = definitionInput.value.trim();
+        // Add to the table
+        const row = termTable.insertRow(-1);
+        const termCell = row.insertCell(0);
+        const definitionCell = row.insertCell(1);
 
-            if (term === "" || definition === "") {
-                alert("Please enter both a term and a definition.");
-                return;
-            }
+        termCell.textContent = term;
+        definitionCell.textContent = definition;
 
-            const row = termTable.insertRow(-1);
-            const termCell = row.insertCell(0);
-            const definitionCell = row.insertCell(1);
+        termInput.value = "";
+        definitionInput.value = "";
+    }
 
-            termCell.textContent = term;
-            definitionCell.textContent = definition;
+    document.getElementById("saveBtn").addEventListener("click", function () {
+        window.location.href = "quiz.html";
+    });
+    
 
-            termInput.value = "";
-            definitionInput.value = "";
+    function toggleContainer() {
+        const greyContainer = document.getElementById("greyContainer");
+        const toggleButton = document.querySelector(".toggle-btn");
+
+        if (greyContainer.style.bottom === "0px") {
+            greyContainer.style.bottom = "-100%";
+            toggleButton.textContent = "▲ Show Saved Terms";
+        } else {
+            greyContainer.style.bottom = "0";
+            toggleButton.textContent = "▼ Hide Saved Terms";
         }
+    }
 
-        function toggleContainer() {
-            const greyContainer = document.getElementById("greyContainer");
-            const toggleButton = document.querySelector(".toggle-btn");
+    // Add event listener for the "Save" button
+    document.getElementById("saveBtn").addEventListener("click", function () {
+        // Redirect to quiz.html
+        window.location.href = "quiz.html";
+    });
+</script>
 
-            if (greyContainer.style.bottom === "0px") {
-                greyContainer.style.bottom = "-100%";
-                toggleButton.textContent = "▲ Show Saved Terms";
-            } else {
-                greyContainer.style.bottom = "0";
-                toggleButton.textContent = "▼ Hide Saved Terms";
-            }
-        }
-    </script>
 </body>
 </html>
