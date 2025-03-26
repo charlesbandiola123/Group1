@@ -172,7 +172,7 @@
             let tableBody = document.getElementById("projectTableBody");
     
             if (project && project.length > 0) {
-                titleElement.textContent = localStorage.getItem("projectTitle") || "Project Details"; // Sync title
+                titleElement.textContent = localStorage.getItem("projectTitle") || "Project Details"; 
                 tableBody.innerHTML = "";
     
                 project.forEach(item => {
@@ -202,7 +202,6 @@
                 titleElement.contentEditable = "false";
                 editableCells.forEach(cell => cell.contentEditable = "false");
 
-                // Save updated data to localStorage
                 localStorage.setItem("projectTitle", titleElement.textContent);
 
                 let updatedProject = [];
@@ -216,7 +215,7 @@
             }
         });
 
-        // Run both functions when the page loads 
+
         window.onload = function () {
             loadPrintTitle();
             loadProject();

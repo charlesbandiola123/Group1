@@ -235,7 +235,7 @@
                     projectBox.addEventListener("click", function () {
                         if (projects[title]) {
                             localStorage.setItem("selectedProject", JSON.stringify(projects[title]));
-                            localStorage.setItem("projectTitle", title); // Sync the title
+                            localStorage.setItem("projectTitle", title); 
                             window.location.href = "print.html";
                         }
                     });
@@ -253,8 +253,6 @@
             } else {
                 displayContainer.innerHTML = "<p>No saved projects yet.</p>";
             }
-    
-            // Load and sync the project title
             function loadTitle() {
                 let titleElement = document.getElementById("projectTitle");
                 if (titleElement) {
@@ -263,10 +261,8 @@
                 }
             }
     
-            loadTitle(); // Call this function to set the title on load
-    
-            // Make the title editable only when the button is clicked
-            let editTitleBtn = document.getElementById("editTitleBtn");
+            loadTitle();
+                let editTitleBtn = document.getElementById("editTitleBtn");
             if (editTitleBtn) {
                 editTitleBtn.addEventListener("click", function () {
                     let titleElement = document.getElementById("projectTitle");
@@ -285,8 +281,8 @@
         let projects = JSON.parse(localStorage.getItem("projects")) || {};
         localStorage.setItem("editProjectTitle", title);
         localStorage.setItem("editProjectData", JSON.stringify(projects[title]));
-        localStorage.setItem("editMode", "true"); // Set edit mode
-        window.location.href = "print.html"; // Redirect to print page
+        localStorage.setItem("editMode", "true"); 
+        window.location.href = "print.html"; 
     }
 
     
