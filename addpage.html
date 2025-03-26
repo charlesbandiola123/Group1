@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quizzler</title>
-    <link rel="icon" type="image/x-icon" href="logo.ico">
+    <link rel="icon" type="image/x-icon" href="logo.ico"> 
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
         body {
@@ -181,106 +183,163 @@
             position: absolute;
             right: 10px;
         }
+        .menu-options {
+        display: none;
+        position: absolute;
+        right: 10px;
+        top: 50px;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        z-index: 3000;
+    }
+
+    .menu-options button {
+        display: block;
+        background: none;
+        border: none;
+        padding: 10px;
+        width: 100%;
+        cursor: pointer;
+        text-align: left;
+        font-size: 16px;
+    }
+
+    .menu-options button:hover {
+        background: #ddd;
+    }
+
+    .saved-terms-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        position: relative;
+        justify-content: center;
+    }
+    
     </style>
 </head>
 <body>
 
-<div class="header1">
-    <img src="logo.ico" alt="Logo" class="logo">
-    <span class="title">QUIZZLER</span>
-</div>
-
-<img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()">
-
-<div class="wrapper">
-    <div class="title-container">
-        <h2>TITLE</h2>
-        <input type="text" id="quizTitle" placeholder="Enter Title">
+    <div class="header1">
+        <img src="logo.ico" alt="Logo" class="logo">
+        <span class="title">QUIZZLER</span>
     </div>
 
-    <div class="container">
-        <h2>ADD TERM AND DEFINITION</h2>
-        <input type="text" id="termInput" placeholder="Enter Term">
-        <textarea id="definitionInput" placeholder="Enter Definition"></textarea>
-        <button class="btn add-btn" onclick="addTerm()">Add</button>
-        <button class="btn" id="saveBtn" type="button">Save</button>
-    </div>
+    <img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()">
 
-    <button class="toggle-btn" onclick="toggleContainer()">▲ Show Saved Terms</button>
-    <div class="grey-container" id="greyContainer">
-        <br>
-        <div style="display: flex; align-items: center; justify-content: center; position: relative; width: 100%;">
-            <h2 style="text-align: center; flex-grow: 1;">SAVED TERMS</h2>
-            <button class="menu-btn" onclick="openMenu()">☰</button>
+    <div class="wrapper">
+        <div class="title-container">
+            <h2>TITLE</h2>
+            <input type="text" id="quizTitle" placeholder="Enter Title">
         </div>
-        <table class="term-table" id="termTable">
-            <tr>
-                <th>Term</th>
-                <th>Definition</th>
-            </tr>
-        </table>
+
+        <div class="container">
+            <h2>ADD TERM AND DEFINITION</h2>
+            <input type="text" id="termInput" placeholder="Enter Term">
+            <textarea id="definitionInput" placeholder="Enter Definition"></textarea>
+            <button class="btn add-btn" onclick="addTerm()">Add</button>
+            <button class="btn" id="saveBtn">Save</button>
+        </div>
+
+        <button class="toggle-btn" onclick="toggleContainer()">▲ Show Saved Terms</button>
+<div class="grey-container" id="greyContainer">
+    <br>
+    <div class="saved-terms-header">
+        <h2>SAVED TERMS</h2>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+            <div class="menu-options" id="menuOptions">
+                <button onclick="editTerms()">Edit</button>
+                <button onclick="deleteTerms()">Delete</button>
+            </div>
+    </div>
+    <table class="term-table" id="termTable">
+        <tr>
+            <th>Term</th>
+            <th>Definition</th>
+        </tr>
+    </table>
+    <div class="menu-options" id="menuOptions">
+        <button onclick="editTerms()">Edit</button>
+        <button onclick="deleteTerms()">Delete</button>
     </div>
 </div>
 
-<script>
-    function goBack() {
-        window.location.href = "frontpage.html";
-    }
 
-    function addTerm() {
-        const termInput = document.getElementById("termInput");
-        const definitionInput = document.getElementById("definitionInput");
-        const termTable = document.getElementById("termTable");
-
-        const term = termInput.value.trim();
-        const definition = definitionInput.value.trim();
-
-        if (term === "" || definition === "") {
-            alert("Please enter both a term and a definition.");
-            return;
+    <script>
+        function goBack() {
+            window.location.href = "frontpage.html";
         }
 
-        // Save the term and definition to local storage
-        const terms = JSON.parse(localStorage.getItem("terms")) || [];
-        terms.push({ term: term, definition: definition });
-        localStorage.setItem("terms", JSON.stringify(terms));
+        function addTerm() {
+            const termInput = document.getElementById("termInput");
+            const definitionInput = document.getElementById("definitionInput");
+            const termTable = document.getElementById("termTable");
 
-        // Add to the table
-        const row = termTable.insertRow(-1);
-        const termCell = row.insertCell(0);
-        const definitionCell = row.insertCell(1);
+            const term = termInput.value.trim();
+            const definition = definitionInput.value.trim();
 
-        termCell.textContent = term;
-        definitionCell.textContent = definition;
+            if (term === "" || definition === "") {
+                alert("Please enter both a term and a definition.");
+                return;
+            }
 
-        termInput.value = "";
-        definitionInput.value = "";
-    }
+            const row = termTable.insertRow(-1);
+            row.insertCell(0).textContent = term;
+            row.insertCell(1).textContent = definition;
 
-    document.getElementById("saveBtn").addEventListener("click", function () {
-        window.location.href = "quiz.html";
-    });
-    
-
-    function toggleContainer() {
-        const greyContainer = document.getElementById("greyContainer");
-        const toggleButton = document.querySelector(".toggle-btn");
-
-        if (greyContainer.style.bottom === "0px") {
-            greyContainer.style.bottom = "-100%";
-            toggleButton.textContent = "▲ Show Saved Terms";
-        } else {
-            greyContainer.style.bottom = "0";
-            toggleButton.textContent = "▼ Hide Saved Terms";
+            termInput.value = "";
+            definitionInput.value = "";
         }
+
+        function toggleContainer() {
+            const greyContainer = document.getElementById("greyContainer");
+            const toggleButton = document.querySelector(".toggle-btn");
+
+            greyContainer.style.bottom = (greyContainer.style.bottom === "0px") ? "-100%" : "0";
+            toggleButton.textContent = (greyContainer.style.bottom === "0px") ? "▼ Hide Saved Terms" : "▲ Show Saved Terms";
+        }
+
+        function saveProject() {
+            const quizTitle = document.getElementById("quizTitle").value.trim();
+            if (!quizTitle) return alert("Please enter a quiz title.");
+
+            const terms = [...document.querySelectorAll("#termTable tr:not(:first-child)")].map(row => ({
+                term: row.cells[0].textContent,
+                definition: row.cells[1].textContent
+            }));
+
+            if (!terms.length) return alert("Please add at least one term and definition.");
+
+            localStorage.setItem("projects", JSON.stringify({ ...JSON.parse(localStorage.getItem("projects") || "{}"), [quizTitle]: terms }));
+            window.location.href = "frontpage.html";
+        }
+
+        document.getElementById("saveBtn").addEventListener("click", saveProject);
+        function toggleMenu() {
+        const menuOptions = document.getElementById("menuOptions");
+        menuOptions.style.display = (menuOptions.style.display === "block") ? "none" : "block";
     }
 
-    // Add event listener for the "Save" button
-    document.getElementById("saveBtn").addEventListener("click", function () {
-        // Redirect to quiz.html
-        window.location.href = "quiz.html";
+    function editTerms() {
+        alert("Edit function coming soon!"); // Replace this with actual edit logic
+    }
+
+    function deleteTerms() {
+        alert("Delete function coming soon!"); // Replace this with actual delete logic
+    }
+
+    document.addEventListener("click", function (event) {
+        const menu = document.getElementById("menuOptions");
+        const menuButton = document.querySelector(".menu-btn");
+        
+        if (event.target !== menu && event.target !== menuButton) {
+            menu.style.display = "none";
+        }
     });
-</script>
+    </script>
 
 </body>
 </html>

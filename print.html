@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Project</title>
+    <title>Quizzler</title>
     <link rel="icon" type="image/x-icon" href="logo.ico"> 
     <style>
         body {
@@ -44,50 +44,18 @@
             color: white;
         }
 
-        .toolbar-container {
-            flex-grow: 1;
-            display: flex;
-            justify-content: flex-start;
-            margin-left: 580px;
-        }
-
-        .toolbar {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .toolbar button {
-            background: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+        .back-btn {
+            width: 50px;
+            height: auto;
             cursor: pointer;
-            font-size: 14px;
-        }
-
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-content {
-            display: none;
             position: absolute;
-            background: white;
-            min-width: 150px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            z-index: 1;
-            text-align: left;
+            top: 120px;
+            left: 20px;
         }
 
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        #generateQuizBtn {
-            display: block;
-            margin: 120px auto 20px auto;
+        #generateQuizBtn, #editProjectBtn {
+            display: inline-block;
+            margin: 140px 5px 20px 5px;
             padding: 10px 15px;
             font-size: 16px;
             background-color: #6C4AB6;
@@ -97,7 +65,7 @@
             cursor: pointer;
         }
 
-        #generateQuizBtn:hover {
+        #generateQuizBtn:hover, #editProjectBtn:hover {
             background-color: #8D72E1;
         }
 
@@ -116,19 +84,24 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            table-layout: fixed;
         }
 
         th, td {
             padding: 12px;
             border: 1px solid black;
+            text-align: left;
+            word-wrap: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         th {
-            background: #b6b6b6;
+            background-color: #f0f0f0;
         }
 
         td {
-            contenteditable: true;
+            pointer-events: none;
         }
 
         @media print {
@@ -143,7 +116,7 @@
                 padding: 0;
             }
 
-            .header, #generateQuizBtn {
+            .header, #generateQuizBtn, #editProjectBtn, .back-btn {
                 display: none;
             }
 
@@ -156,75 +129,24 @@
     </style>
 </head>
 <body>
-
     <div class="header">
         <div class="logo-title">
             <img src="logo.ico" alt="Logo" class="logo">
             <span class="title">QUIZZLER</span>
         </div>
+    </div>
 
-        <div class="toolbar-container">
-            <div class="toolbar">
-                <div class="dropdown">
-                    <button>Font</button>
-                    <div class="dropdown-content">
-                        <label for="fontFamily">Font:</label>
-                        <select id="fontFamily" onchange="changeFont()">
-                            <option value="Arial">Arial</option>
-                            <option value="Times New Roman">Times New Roman</option>
-                            <option value="Verdana">Verdana</option>
-                            <option value="Courier New">Courier New</option>
-                        </select>
-                        <br>
-                        <label for="fontSize">Size:</label>
-                        <select id="fontSize" onchange="changeFont()">
-                            <option value="12px">12</option>
-                            <option value="14px">14</option>
-                            <option value="16px">16</option>
-                            <option value="18px">18</option>
-                        </select>
-                    </div>
-                </div>
-        
-                <div class="dropdown">
-                    <button>Layout</button>
-                    <div class="dropdown-content">
-                        <label for="paperSize">Paper Size:</label>
-                        <select id="paperSize" onchange="adjustPaper()">
-                            <option value="a4" selected>A4</option>
-                            <option value="letter">Letter</option>
-                            <option value="long">Long</option>
-                        </select>
-                        <br>
-                        <label for="orientation">Orientation:</label>
-                        <select id="orientation" onchange="adjustPaper()">
-                            <option value="portrait" selected>Portrait</option>
-                            <option value="landscape">Landscape</option>
-                        </select>
-                        <br>
-                        <label for="margin">Margins:</label>
-                        <select id="margin" onchange="adjustMargins()">
-                            <option value="1in" selected>Normal</option>
-                            <option value="0.5in">Narrow</option>
-                            <option value="1.5in">Wide</option>
-                        </select>
-                    </div>
-                </div>
-        
-                <button onclick="window.print()">Print</button>
-            </div>
-        </div>
-    </div>    
-
+    <img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()">
     <button id="generateQuizBtn">Generate Quiz</button>
+    <button id="editProjectBtn">Edit</button>
 
     <div id="paper" class="paper">
-        <h2>Project Details</h2>
+        <h2 id="projectTitle" contenteditable="false">Project Details</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Term</th>
-                    <th>Definition</th>
+                    <th style="width: 40%;">Term</th>
+                    <th style="width: 60%;">Definition</th>
                 </tr>
             </thead>
             <tbody id="projectTableBody"></tbody>
@@ -232,15 +154,31 @@
     </div>
 
     <script>
+        function goBack() {
+            window.history.back();
+        }
+    
+        function loadPrintTitle() {
+            let savedTitle = localStorage.getItem("projectTitle") || "Sample Title";
+            let titleElement = document.getElementById("projectTitle");
+            if (titleElement) {
+                titleElement.textContent = savedTitle;
+            }
+        }
+    
         function loadProject() {
             let project = JSON.parse(localStorage.getItem("selectedProject"));
+            let titleElement = document.getElementById("projectTitle");
+            let tableBody = document.getElementById("projectTableBody");
+    
             if (project && project.length > 0) {
-                let tableBody = document.getElementById("projectTableBody");
+                titleElement.textContent = localStorage.getItem("projectTitle") || "Project Details"; // Sync title
                 tableBody.innerHTML = "";
+    
                 project.forEach(item => {
                     let row = document.createElement("tr");
-                    row.innerHTML = `<td contenteditable="true">${item.term}</td>
-                                     <td contenteditable="true">${item.definition}</td>`;
+                    row.innerHTML = `<td class="editable" contenteditable="false">${item.term}</td>
+                                     <td class="editable" contenteditable="false">${item.definition}</td>`;
                     tableBody.appendChild(row);
                 });
             } else {
@@ -248,23 +186,42 @@
             }
         }
 
-        function changeFont() {
-            let fontFamily = document.getElementById("fontFamily").value;
-            let fontSize = document.getElementById("fontSize").value;
-            document.getElementById("paper").style.fontFamily = fontFamily;
-            document.getElementById("paper").style.fontSize = fontSize;
-        }
+        let isEditing = false;
+        document.getElementById("editProjectBtn").addEventListener("click", function () {
+            isEditing = !isEditing;
+            let editBtn = document.getElementById("editProjectBtn");
+            let titleElement = document.getElementById("projectTitle");
+            let editableCells = document.querySelectorAll(".editable");
 
-        function adjustPaper() {
-            let paper = document.getElementById("paper");
-            let size = document.getElementById("paperSize").value;
-            let orientation = document.getElementById("orientation").value;
-            paper.style.width = size === "a4" ? (orientation === "portrait" ? "8.27in" : "11.69in") : (size === "letter" ? "8.5in" : "8.5in");
-            paper.style.height = size === "a4" ? (orientation === "portrait" ? "11.69in" : "8.27in") : (size === "letter" ? "11in" : "13in");
-        }
+            if (isEditing) {
+                editBtn.textContent = "Save";
+                titleElement.contentEditable = "true";
+                editableCells.forEach(cell => cell.contentEditable = "true");
+            } else {
+                editBtn.textContent = "Edit";
+                titleElement.contentEditable = "false";
+                editableCells.forEach(cell => cell.contentEditable = "false");
 
-        window.onload = loadProject;
+                // Save updated data to localStorage
+                localStorage.setItem("projectTitle", titleElement.textContent);
+
+                let updatedProject = [];
+                document.querySelectorAll("#projectTableBody tr").forEach(row => {
+                    let term = row.cells[0].textContent;
+                    let definition = row.cells[1].textContent;
+                    updatedProject.push({ term, definition });
+                });
+
+                localStorage.setItem("selectedProject", JSON.stringify(updatedProject));
+            }
+        });
+
+        // Run both functions when the page loads 
+        window.onload = function () {
+            loadPrintTitle();
+            loadProject();
+        };
     </script>
-
 </body>
 </html>
+
