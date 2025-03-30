@@ -47,6 +47,10 @@
                 var email = $("#email").val();
                 var password = $("#password").val();
 
+                // Store user data in localStorage
+                localStorage.setItem("userEmail", email);
+                localStorage.setItem("userPassword", password);
+
                 // Send the data to signup.php using AJAX
                 $.ajax({
                     type: "POST",
