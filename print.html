@@ -33,7 +33,7 @@
         }
 
         .logo {
-            width: 60px;
+            width: 80px;
             height: auto;
             margin-right: 10px;
         }
@@ -53,9 +53,15 @@
             left: 20px;
         }
 
-        #generateQuizBtn, #editProjectBtn {
-            display: inline-block;
-            margin: 140px 5px 20px 5px;
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 130px;
+        }
+
+        #generateQuizBtn, #editProjectBtn, .menu-btn {
             padding: 10px 15px;
             font-size: 16px;
             background-color: #6C4AB6;
@@ -65,8 +71,37 @@
             cursor: pointer;
         }
 
-        #generateQuizBtn:hover, #editProjectBtn:hover {
+        #generateQuizBtn:hover, #editProjectBtn:hover, .menu-btn:hover {
             background-color: #8D72E1;
+        }
+
+        .menu-container {
+            position: relative;
+        }
+
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid black;
+            min-width: 120px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .menu-dropdown button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .menu-dropdown button:hover {
+            background: #f0f0f0;
         }
 
         .paper {
@@ -84,16 +119,12 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            table-layout: fixed;
         }
 
         th, td {
             padding: 12px;
             border: 1px solid black;
             text-align: left;
-            word-wrap: break-word;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         th {
@@ -105,25 +136,8 @@
         }
 
         @media print {
-            @page {
-                size: A4;
-                margin: 1in;
-            }
-
-            body {
-                background: none;
-                margin: 0;
-                padding: 0;
-            }
-
-            .header, #generateQuizBtn, #editProjectBtn, .back-btn {
+            .header, .button-container {
                 display: none;
-            }
-
-            .paper {
-                width: 100%;
-                height: auto;
-                page-break-before: always;
             }
         }
     </style>
@@ -137,16 +151,27 @@
     </div>
 
     <img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()">
-    <button id="generateQuizBtn">Generate Quiz</button>
-    <button id="editProjectBtn">Edit</button>
+    
+    <div class="button-container">
+        <button id="generateQuizBtn">Generate Quiz</button>
+        <button id="editProjectBtn">Edit</button>
+        <div class="menu-container">
+            <button class="menu-btn" onclick="toggleMenu()">☰</button>
+            <div class="menu-dropdown" id="menuDropdown">
+                <button onclick="exportToPDF()">Export to PDF</button>
+                <button onclick="window.print()">Print</button>
+                <button onclick="shareProject()">Share</button>
+            </div>
+        </div>
+    </div>
 
     <div id="paper" class="paper">
         <h2 id="projectTitle" contenteditable="false">Project Details</h2>
         <table>
             <thead>
                 <tr>
-                    <th style="width: 40%;">Term</th>
-                    <th style="width: 60%;">Definition</th>
+                    <th>Term</th>
+                    <th>Definition</th>
                 </tr>
             </thead>
             <tbody id="projectTableBody"></tbody>
@@ -157,7 +182,26 @@
         function goBack() {
             window.history.back();
         }
-    
+
+        function toggleMenu() {
+            let menu = document.getElementById("menuDropdown");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        }
+
+        function exportToPDF() {
+            alert("Exporting to PDF is not implemented yet.");
+        }
+
+        function shareProject() {
+            alert("Sharing functionality is not implemented yet.");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-btn')) {
+                document.getElementById("menuDropdown").style.display = "none";
+            }
+        };
+
         function loadPrintTitle() {
             let savedTitle = localStorage.getItem("projectTitle") || "Sample Title";
             let titleElement = document.getElementById("projectTitle");
@@ -165,16 +209,16 @@
                 titleElement.textContent = savedTitle;
             }
         }
-    
+
         function loadProject() {
             let project = JSON.parse(localStorage.getItem("selectedProject"));
             let titleElement = document.getElementById("projectTitle");
             let tableBody = document.getElementById("projectTableBody");
-    
+
             if (project && project.length > 0) {
                 titleElement.textContent = localStorage.getItem("projectTitle") || "Project Details"; 
                 tableBody.innerHTML = "";
-    
+
                 project.forEach(item => {
                     let row = document.createElement("tr");
                     row.innerHTML = `<td class="editable" contenteditable="false">${item.term}</td>
@@ -186,34 +230,23 @@
             }
         }
 
-        let isEditing = false;
         document.getElementById("editProjectBtn").addEventListener("click", function () {
-            isEditing = !isEditing;
-            let editBtn = document.getElementById("editProjectBtn");
-            let titleElement = document.getElementById("projectTitle");
-            let editableCells = document.querySelectorAll(".editable");
+    // Get terms and definitions from the table
+    let terms = [];
+    let rows = document.querySelectorAll("#projectTableBody tr");
+    rows.forEach(row => {
+        let term = row.cells[0].textContent;
+        let definition = row.cells[1].textContent;
+        terms.push({ term, definition });
+    });
 
-            if (isEditing) {
-                editBtn.textContent = "Save";
-                titleElement.contentEditable = "true";
-                editableCells.forEach(cell => cell.contentEditable = "true");
-            } else {
-                editBtn.textContent = "Edit";
-                titleElement.contentEditable = "false";
-                editableCells.forEach(cell => cell.contentEditable = "false");
+    // Store the terms and project title in localStorage
+    localStorage.setItem("terms", JSON.stringify(terms));
+    localStorage.setItem("projectTitle", document.getElementById("projectTitle").textContent);
 
-                localStorage.setItem("projectTitle", titleElement.textContent);
-
-                let updatedProject = [];
-                document.querySelectorAll("#projectTableBody tr").forEach(row => {
-                    let term = row.cells[0].textContent;
-                    let definition = row.cells[1].textContent;
-                    updatedProject.push({ term, definition });
-                });
-
-                localStorage.setItem("selectedProject", JSON.stringify(updatedProject));
-            }
-        });
+    // Redirect to addpage.html
+    window.location.href = "addpage.html?mode=edit";
+});
 
 
         window.onload = function () {
@@ -221,6 +254,6 @@
             loadProject();
         };
     </script>
+    
 </body>
 </html>
-
