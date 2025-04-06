@@ -231,29 +231,24 @@
         }
 
         document.getElementById("editProjectBtn").addEventListener("click", function () {
-    // Get terms and definitions from the table
-    let terms = [];
-    let rows = document.querySelectorAll("#projectTableBody tr");
-    rows.forEach(row => {
-        let term = row.cells[0].textContent;
-        let definition = row.cells[1].textContent;
-        terms.push({ term, definition });
-    });
+            let terms = [];
+            let rows = document.querySelectorAll("#projectTableBody tr");
+            rows.forEach(row => {
+                let term = row.cells[0].textContent;
+                let definition = row.cells[1].textContent;
+                terms.push({ term, definition });
+            });
 
-    // Store the terms and project title in localStorage
-    localStorage.setItem("terms", JSON.stringify(terms));
-    localStorage.setItem("projectTitle", document.getElementById("projectTitle").textContent);
+            localStorage.setItem("terms", JSON.stringify(terms));
+            localStorage.setItem("projectTitle", document.getElementById("projectTitle").textContent);
 
-    // Redirect to addpage.html
-    window.location.href = "addpage.html?mode=edit";
-});
-
+            window.location.href = "addpage.html?mode=edit";
+        });
 
         window.onload = function () {
             loadPrintTitle();
             loadProject();
         };
     </script>
-    
 </body>
 </html>
