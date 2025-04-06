@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Page</title>
     <style>
-        /* Styling for the quiz page */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -59,51 +58,7 @@
 </div>
 
 <script>
-    // Get the terms stored in localStorage
     const terms = JSON.parse(localStorage.getItem("terms")) || [];
 
-    // Function to select a random term and definition
     function getRandomTerm() {
-        const randomIndex = Math.floor(Math.random() * terms.length);
-        return terms[randomIndex];
-    }
-
-    // Function to display a new random question
-    function displayQuestion() {
-        const randomTerm = getRandomTerm();
-        const definitionDisplay = document.getElementById("definitionDisplay");
-
-        // Display the definition of the randomly selected term
-        definitionDisplay.textContent = randomTerm.definition;
-
-        // Store the correct answer in a global variable
-        window.correctTerm = randomTerm.term;
-    }
-
-    // Function to check if the answer is correct
-    function checkAnswer() {
-        const termInput = document.getElementById("termInput").value.trim();
-
-        if (termInput === "") {
-            alert("Please enter a term.");
-            return;
-        }
-
-        // Check if the entered term matches the correct term
-        if (termInput.toLowerCase() === window.correctTerm.toLowerCase()) {
-            alert("Correct!");
-        } else {
-            alert("Sorry, that's incorrect. Try again.");
-        }
-
-        // After submitting the answer, load a new question and clear the input field
-        document.getElementById("termInput").value = ""; // Clear input field
-        displayQuestion(); // Display new question
-    }
-
-    // Load a new question when the page loads
-    window.onload = displayQuestion;
-</script>
-
-</body>
-</html>
+        const randomIndex
