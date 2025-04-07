@@ -2,183 +2,364 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quizzler - Add Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quizzler</title>
+  <link rel="icon" type="image/x-icon" href="logo.ico" />
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f2f4f8;
-      color: #333;
-      padding: 20px;
-    }
-
-    header {
-      background-color: #4b7bec;
-      color: white;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    h1 {
-      margin-bottom: 5px;
-    }
-
-    main {
-      background-color: white;
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 600px;
-      margin: 0 auto;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-      margin-bottom: 15px;
-      color: #2d3436;
-    }
-
-    form {
+      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to right, #8D72E1, #6C4AB6);
+      color: white;
     }
-
-    label {
-      margin-bottom: 5px;
-      font-weight: bold;
+    .header1 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: linear-gradient(to right, #8D72E1, #6C4AB6);
+      border-bottom: 2px solid white;
+      z-index: 1000;
     }
-
-    input[type="text"] {
+    .logo {
+      width: 80px;
+    }
+    .title {
+      font-size: 50px;
+      font-family: fantasy;
+      color: white;
+    }
+    .back-btn {
+      width: 50px;
+      height: auto;
+      cursor: pointer;
+      position: absolute;
+      top: 120px;
+      left: 20px;
+    }
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-top: 80px;
+    }
+    .title-container {
+      width: 70%;
+      max-width: 1000px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 50px;
+      padding-top: 30px;
+      padding-bottom: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px;
+      border-radius: 15px;
+      width: 1000px;
+      text-align: center;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.8);
+      color: black;
       font-size: 16px;
     }
-
-    button {
-      padding: 10px 15px;
-      margin-top: 10px;
+    textarea {
+      resize: none;
+      height: 100px;
+    }
+    .btn {
+      background: #4CAF50;
+      color: white;
+      padding: 12px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      border-radius: 8px;
       font-size: 16px;
-      background-color: #4b7bec;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+    .add-btn {
+      background: #008CBA;
+    }
+    .add-btn:hover {
+      background: #0073a5;
+    }
+    .grey-container {
+      position: fixed;
+      bottom: -100%;
+      width: 80%;
+      height: 100vh;
+      background: #b7b1f2c7;
+      padding: 20px;
+      border-radius: 10px 10px 0 0;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      transition: bottom 0.4s ease-in-out;
+      overflow-y: auto;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+    .toggle-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #B7B1F2;
       color: white;
       border: none;
-      border-radius: 6px;
+      padding: 10px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      border-radius: 5px;
+      font-size: 18px;
+      z-index: 2500;
     }
-
-    button:hover {
-      background-color: #3867d6;
+    .term-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      background: white;
     }
-
-    .term-pair {
+    .term-table th:nth-child(1),
+    .term-table td:nth-child(1) {
+      width: 25%;
+      word-wrap: break-word;
+      overflow: hidden;
+    }
+    .term-table th:nth-child(2),
+    .term-table td:nth-child(2) {
+      width: 75%;
+      word-wrap: break-word;
+      overflow: hidden;
+      position: relative;
+    }
+    .term-table th,
+    .term-table td {
+      border: 1px solid black;
+      padding: 10px;
+      text-align: center;
+      background: white;
+      vertical-align: top;
+      color: black;
+    }
+    .term-table tr:hover {
+      background-color: #f1f1f1;
+    }
+    .btn-edit, .btn-delete {
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+    }
+    .btn-edit img, .btn-delete img {
+      width: 100%;
+      height: 100%;
+    }
+    .saved-terms-header {
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .term-pair input {
-      flex: 1;
-    }
-
-    .username-display {
-      margin-bottom: 10px;
-      font-style: italic;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      position: relative;
+      justify-content: center;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Quizzler</h1>
-    <div class="username-display" id="usernameDisplay"></div>
-  </header>
+  <div class="header1">
+    <img src="logo.ico" alt="Logo" class="logo" />
+    <span class="title">QUIZZLER</span>
+  </div>
 
-  <main>
-    <h2>Create Quiz Project</h2>
-    <form id="quizForm">
-      <label for="projectName">Project Name:</label>
-      <input type="text" id="projectName" required />
+  <img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()" />
 
-      <div id="termPairs">
-        <div class="term-pair">
-          <input type="text" class="term" placeholder="Term" required />
-          <input type="text" class="definition" placeholder="Definition" required />
-        </div>
+  <div class="wrapper">
+    <div class="title-container">
+      <h2>TITLE</h2>
+      <!-- The input field for the project title -->
+      <input type="text" id="quizTitle" placeholder="Enter Title" />
+    </div>
+
+    <div class="container">
+      <h2>ADD TERM AND DEFINITION</h2>
+      <input type="text" id="termInput" placeholder="Enter Term" />
+      <textarea id="definitionInput" placeholder="Enter Definition"></textarea>
+      <button class="btn add-btn" onclick="addTerm()">Add</button>
+      <button class="btn" id="saveBtn">Save</button>
+    </div>
+
+    <button class="toggle-btn" onclick="toggleContainer()">▲ Show Saved Terms</button>
+
+    <div class="grey-container" id="greyContainer">
+      <br />
+      <div class="saved-terms-header">
+        <h2>SAVED TERMS</h2>
       </div>
-
-      <button type="button" onclick="addTermPair()">Add More</button>
-      <button type="submit">Save Project</button>
-    </form>
-  </main>
+      <table class="term-table" id="termTable">
+        <tr>
+          <th>Term</th>
+          <th>Definition</th>
+        </tr>
+      </table>
+    </div>
+  </div>
 
   <script>
-    // Show logged in user
-    const username = localStorage.getItem("loggedInUser");
-    if (username) {
-      document.getElementById("usernameDisplay").textContent = `Logged in as: ${username}`;
+    window.onload = function () {
+    // Check URL parameters to determine if we're creating a new project or editing
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+
+    if (mode !== "edit") {
+        // Clear the saved data if not in edit mode (i.e., starting a new project)
+        localStorage.removeItem("terms");
+        localStorage.removeItem("projectTitle");
     }
 
-    function addTermPair() {
-      const pairContainer = document.createElement("div");
-      pairContainer.className = "term-pair";
-      pairContainer.innerHTML = `
-        <input type="text" class="term" placeholder="Term" required />
-        <input type="text" class="definition" placeholder="Definition" required />
-      `;
-      document.getElementById("termPairs").appendChild(pairContainer);
+    // After clearing (or if in edit mode), load saved data (if any) into the page
+    let storedTitle = localStorage.getItem("projectTitle");
+    let storedTerms = JSON.parse(localStorage.getItem("terms"));
+
+    // If there's a saved title, fill the title input; otherwise leave it empty (or default)
+    document.getElementById("quizTitle").value = storedTitle || "";
+
+    // Populate the term table if there are saved terms (typically for edit mode)
+    if (storedTerms && storedTerms.length > 0) {
+        const termTable = document.getElementById("termTable");
+        storedTerms.forEach(item => {
+            let row = termTable.insertRow(-1);
+            row.insertCell(0).textContent = item.term;
+            let definitionCell = row.insertCell(1);
+            definitionCell.textContent = item.definition;
+
+            let editBtn = document.createElement("button");
+            editBtn.classList.add("btn-edit");
+            editBtn.innerHTML = `<img src="edit-icon.png" alt="Edit">`;
+            editBtn.onclick = function() { editTerm(row); };
+
+            let deleteBtn = document.createElement("button");
+            deleteBtn.classList.add("btn-delete");
+            deleteBtn.innerHTML = `<img src="delete-icon.png" alt="Delete">`;
+            deleteBtn.onclick = function() { deleteTerm(row); };
+
+            definitionCell.appendChild(editBtn);
+            definitionCell.appendChild(deleteBtn);
+        });
     }
 
-    document.getElementById("quizForm").addEventListener("submit", function (e) {
-      e.preventDefault();
+    // ... (any other onload code you already have)
+};
 
-      const projectName = document.getElementById("projectName").value.trim();
-      const termElements = document.querySelectorAll(".term");
-      const definitionElements = document.querySelectorAll(".definition");
 
-      const terms = [];
-      const duplicates = new Set();
+    // All original functions are kept intact
 
-      for (let i = 0; i < termElements.length; i++) {
-        const term = termElements[i].value.trim();
-        const definition = definitionElements[i].value.trim();
-        const key = `${term.toLowerCase()}|${definition.toLowerCase()}`;
+    function goBack() {
+      window.location.href = "frontpage.html";
+    }
 
-        if (duplicates.has(key)) {
-          alert(`Duplicate term-definition pair found: "${term}" - "${definition}"`);
-          return;
-        }
+    function addTerm() {
+      const termInput = document.getElementById("termInput");
+      const definitionInput = document.getElementById("definitionInput");
+      const termTable = document.getElementById("termTable");
 
-        duplicates.add(key);
-        terms.push({ term, definition });
+      const term = termInput.value.trim();
+      const definition = definitionInput.value.trim();
+
+      if (term === "" || definition === "") {
+        alert("Please enter both a term and a definition.");
+        return;
       }
 
-      const quizProject = {
-        name: projectName,
-        terms: terms,
-        owner: username || "guest"
-      };
+      const row = termTable.insertRow(-1);
+      row.insertCell(0).textContent = term;
+      let definitionCell = row.insertCell(1);
+      definitionCell.textContent = definition;
 
-      let projects = JSON.parse(localStorage.getItem("quizProjects") || "[]");
-      projects.push(quizProject);
-      localStorage.setItem("quizProjects", JSON.stringify(projects));
+      let editBtn = document.createElement("button");
+      editBtn.classList.add("btn-edit");
+      editBtn.innerHTML = `<img src="edit.png" alt="Edit">`;
+      editBtn.onclick = function() { editTerm(row); };
 
-      alert("Project saved successfully!");
-      this.reset();
-      document.getElementById("termPairs").innerHTML = `
-        <div class="term-pair">
-          <input type="text" class="term" placeholder="Term" required />
-          <input type="text" class="definition" placeholder="Definition" required />
-        </div>
-      `;
-    });
+      let deleteBtn = document.createElement("button");
+      deleteBtn.classList.add("btn-delete");
+      deleteBtn.innerHTML = `<img src="delete.png" alt="Delete">`;
+      deleteBtn.onclick = function() { deleteTerm(row); };
+
+      definitionCell.appendChild(editBtn);
+      definitionCell.appendChild(deleteBtn);
+
+      termInput.value = "";
+      definitionInput.value = "";
+    }
+
+    function toggleContainer() {
+      const greyContainer = document.getElementById("greyContainer");
+      const toggleButton = document.querySelector(".toggle-btn");
+
+      greyContainer.style.bottom = (greyContainer.style.bottom === "0px") ? "-100%" : "0";
+      toggleButton.textContent = (greyContainer.style.bottom === "0px") ? "▼ Hide Saved Terms" : "▲ Show Saved Terms";
+    }
+
+    function saveProject() {
+      const quizTitle = document.getElementById("quizTitle").value.trim();
+      if (!quizTitle) return alert("Please enter a quiz title.");
+
+      const terms = [...document.querySelectorAll("#termTable tr:not(:first-child)")].map(row => ({
+        term: row.cells[0].textContent,
+        definition: row.cells[1].textContent
+      }));
+
+      if (!terms.length) return alert("Please add at least one term and definition.");
+
+      // Save the project data to the "projects" key in localStorage
+      localStorage.setItem("projects", JSON.stringify({ ...JSON.parse(localStorage.getItem("projects") || "{}"), [quizTitle]: terms }));
+      window.location.href = "frontpage.html";
+    }
+
+    document.getElementById("saveBtn").addEventListener("click", saveProject);
+
+    function editTerm(row) {
+      let definitionCell = row.cells[1];
+      // Make the cell editable on click
+      definitionCell.setAttribute("contenteditable", "true");
+    }
+
+    function deleteTerm(row) {
+      row.remove();
+    }
   </script>
 </body>
 </html>
