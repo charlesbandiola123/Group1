@@ -1,140 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Identification Quiz</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f1f1f1;
-      padding: 30px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.ico">
+    <title>Quizzler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #8D72E1, #e0b7fc);
+            margin: 0;
+            padding: 0;
+        }
 
-    .paper {
-      width: 210mm;
-      min-height: 297mm;
-      margin: auto;
-      padding: 40px;
-      background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      box-sizing: border-box;
-    }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
 
-    .quiz-title {
-      text-align: center;
-      font-size: 28px;
-      margin-bottom: 30px;
-      color: #6C4AB6;
-    }
+        h1 {
+            text-align: center;
+            color: #6C4AB6;
+        }
 
-    .question {
-      margin-bottom: 40px;
-    }
+        .question {
+            margin-bottom: 25px;
+        }
 
-    .question p {
-      font-size: 18px;
-      margin-bottom: 15px;
-    }
+        .question h3 {
+            margin: 0 0 10px;
+        }
 
-    .answer-line {
-      width: 100%;
-      border-bottom: 2px solid #ccc;
-      height: 30px;
-    }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #6C4AB6;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
 
-    @media print {
-      body {
-        background: none;
-        padding: 0;
-      }
+        .back-btn:hover {
+            background-color: #8D72E1;
+        }
 
-      .paper {
-        box-shadow: none;
-        margin: 0;
-        padding: 20mm;
-        page-break-after: always;
-      }
+        .save-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
 
-      button {
-        display: none;
-      }
-    }
-
-    .btn-container {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .btn-container button {
-      background-color: #8D72E1;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      margin: 0 10px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .btn-container button:hover {
-      background-color: #6C4AB6;
-    }
-  </style>
+        .save-btn:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-  <div class="paper" id="quizContainer">
-    <!-- Identification questions will be inserted here -->
-  </div>
+    <div class="container">
+        <h1>Identification Quiz</h1>
+        <div id="quizContainer"></div>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <a href="print.html" class="back-btn">Back to Project</a>
+            <button class="back-btn" onclick="window.open('presenti.html', '_blank')">Present</button>
+            <button class="save-btn" onclick="saveQuiz()">Save Quiz</button>
+        </div>
+    </div>
 
-  <div class="btn-container">
-    <button onclick="window.print()">Print</button>
-    <button onclick="location.href='presenti.html'">Present</button>
-  </div>
+    <script>
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
 
-  <script>
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
+        function generateIdentificationQuiz() {
+            const quizContainer = document.getElementById("quizContainer");
+            const rawData = localStorage.getItem("selectedProject");
 
-    function generateIdentificationQuiz() {
-      const container = document.getElementById("quizContainer");
-      const rawData = localStorage.getItem("selectedProject");
+            if (!rawData) {
+                quizContainer.innerHTML = "<p>No project data found.</p>";
+                return;
+            }
 
-      if (!rawData) {
-        container.innerHTML = "<p>No project data found.</p>";
-        return;
-      }
+            const data = JSON.parse(rawData);
+            if (data.length < 4) {
+                quizContainer.innerHTML = "<p>Need at least 4 terms to generate a quiz.</p>";
+                return;
+            }
 
-      const data = JSON.parse(rawData);
-      if (data.length < 4) {
-        container.innerHTML = "<p>Need at least 4 terms to generate a quiz.</p>";
-        return;
-      }
+            shuffle(data);
+            const questions = data.slice(0, 10);
 
-      shuffle(data);
-      const questions = data.slice(0, 10);
+            questions.forEach((item, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.className = "question";
 
-      const title = document.createElement("div");
-      title.className = "quiz-title";
-      title.innerText = "Identification Quiz";
-      container.appendChild(title);
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. What is the definition of <strong>${item.term}</strong>?</h3>
+                    <div class="answer-line"></div>
+                `;
 
-      questions.forEach((item, index) => {
-        const questionBlock = document.createElement("div");
-        questionBlock.className = "question";
-        questionBlock.innerHTML = `
-          <p>${index + 1}. What is the definition of <strong>${item.term}</strong>?</p>
-          <div class="answer-line"></div>
-        `;
-        container.appendChild(questionBlock);
-      });
-    }
+                quizContainer.appendChild(questionDiv);
+            });
+        }
 
-    window.onload = generateIdentificationQuiz;
-  </script>
+        function saveQuiz() {
+            const rawData = localStorage.getItem("selectedProject");
+
+            if (!rawData) {
+                alert("No project data found.");
+                return;
+            }
+
+            const data = JSON.parse(rawData);
+            const quizData = {
+                title: "Identification Quiz",
+                questions: data.slice(0, 10) // Save only the first 10 questions
+            };
+
+            let savedQuizzes = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
+            savedQuizzes.push(quizData);
+            localStorage.setItem("savedQuizzes", JSON.stringify(savedQuizzes));
+
+            alert("Quiz saved! Go to the front page to view your saved quizzes.");
+        }
+
+        window.onload = generateIdentificationQuiz;
+    </script>
 </body>
 </html>

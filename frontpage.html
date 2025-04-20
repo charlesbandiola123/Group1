@@ -221,51 +221,56 @@
       document.querySelector(".signup").addEventListener("click", function () {
         window.location.href = "signup.html";
       });
-
+  
       document.querySelector(".login").addEventListener("click", function () {
         window.location.href = "login.html";
       });
     });
-
+  
     window.onload = function () {
       let projects = JSON.parse(localStorage.getItem("projects")) || {};
       let displayContainer = document.getElementById("termsBox");
+      let quizzesBox = document.getElementById("quizzesBox");
+  
+      // Clear previous content
       displayContainer.innerHTML = "";
-
+      quizzesBox.innerHTML = "";
+  
+      // Load projects
       if (Object.keys(projects).length > 0) {
         Object.keys(projects).forEach((title) => {
           let projectBox = document.createElement("div");
           projectBox.classList.add("project-box");
-
+  
           let menuButton = document.createElement("button");
           menuButton.classList.add("menu-button");
           menuButton.innerHTML = "⋮";
-
+  
           menuButton.onclick = function (event) {
             event.stopPropagation();
             document.querySelectorAll(".menu-container").forEach(menu => menu.style.display = "none");
             let menu = this.nextElementSibling;
             menu.style.display = menu.style.display === "flex" ? "none" : "flex";
           };
-
+  
           let menuContainer = document.createElement("div");
           menuContainer.classList.add("menu-container");
-
+  
           let editButton = document.createElement("button");
           editButton.textContent = "Edit";
           editButton.onclick = function () { editProject(title); };
-
+  
           let deleteButton = document.createElement("button");
           deleteButton.textContent = "Delete";
           deleteButton.onclick = function () { deleteProject(title); };
-
+  
           menuContainer.appendChild(editButton);
           menuContainer.appendChild(deleteButton);
-
+  
           projectBox.innerHTML = `<h3>${title}</h3>`;
           projectBox.appendChild(menuButton);
           projectBox.appendChild(menuContainer);
-
+  
           projectBox.addEventListener("click", function () {
             if (projects[title]) {
               localStorage.setItem("selectedProject", JSON.stringify(projects[title]));
@@ -273,10 +278,10 @@
               window.location.href = "print.html";
             }
           });
-
+  
           displayContainer.appendChild(projectBox);
         });
-
+  
         document.addEventListener("click", function (event) {
           document.querySelectorAll(".menu-container").forEach(menu => {
             if (!menu.contains(event.target) && !event.target.classList.contains("menu-button")) {
@@ -287,52 +292,63 @@
       } else {
         displayContainer.innerHTML = "<p>No saved projects yet.</p>";
       }
+  
+      // Load quizzes
+      loadSavedQuizzes();
     };
-
-    function editProject(title) {
-      let projects = JSON.parse(localStorage.getItem("projects")) || {};
-      localStorage.setItem("editProjectTitle", title);
-      localStorage.setItem("editProjectData", JSON.stringify(projects[title]));
-      localStorage.setItem("editMode", "true");
-      window.location.href = "print.html";
+  
+    function loadSavedQuizzes() {
+      const quizzes = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
+      const quizzesBox = document.getElementById("quizzesBox");
+  
+      quizzesBox.innerHTML = ""; // Clear previous content
+  
+      if (quizzes.length > 0) {
+        quizzes.forEach((quiz, index) => {
+          const quizBox = document.createElement("div");
+          quizBox.classList.add("project-box");
+          quizBox.innerHTML = `<h3>${quiz.title} #${index + 1}</h3>`;
+  
+          quizBox.addEventListener("click", function () {
+            localStorage.setItem("selectedQuiz", JSON.stringify(quiz));
+            // You can navigate to a separate quiz view page if you like
+            alert("Quiz selected: You can redirect or preview here.");
+          });
+  
+          quizzesBox.appendChild(quizBox);
+        });
+      } else {
+        quizzesBox.innerHTML = "<p>No saved quizzes yet.</p>";
+      }
     }
-
-    function deleteProject(title) {
-      let projects = JSON.parse(localStorage.getItem("projects")) || {};
-      delete projects[title];
-      localStorage.setItem("projects", JSON.stringify(projects));
-      document.getElementById("termsBox").innerHTML = "";
-      window.onload();
-    }
-
+  
     // Toggle between project and quizzes view
     document.getElementById("viewToggleBtn").addEventListener("click", switchView);
     document.getElementById("switchViewBtn").addEventListener("click", switchView);
-
+  
     function switchView() {
-  const termsBox = document.getElementById("termsBox");
-  const quizzesBox = document.getElementById("quizzesBox");
-  const toggleBtn = document.getElementById("viewToggleBtn");
-  const menuBtn = document.getElementById("switchViewBtn");
-
-  if (termsBox.style.display === "none") {
-    // Currently on quizzes, switch to projects
-    termsBox.style.display = "flex";
-    quizzesBox.style.display = "none";
-    toggleBtn.textContent = "My Project";
-    menuBtn.textContent = "My Project";
-  } else {
-    // Currently on projects, switch to quizzes
-    termsBox.style.display = "none";
-    quizzesBox.style.display = "flex";
-    toggleBtn.textContent = "My Quizzes";
-    menuBtn.textContent = "My Quizzes";
-  }
-
-  document.getElementById("toggleMenu").style.display = "none";
-}
-
-
+      const termsBox = document.getElementById("termsBox");
+      const quizzesBox = document.getElementById("quizzesBox");
+      const toggleBtn = document.getElementById("viewToggleBtn");
+      const menuBtn = document.getElementById("switchViewBtn");
+  
+      if (termsBox.style.display === "none") {
+        // Currently on quizzes, switch to projects
+        termsBox.style.display = "flex";
+        quizzesBox.style.display = "none";
+        toggleBtn.textContent = "My Project";
+        menuBtn.textContent = "My Project";
+      } else {
+        // Currently on projects, switch to quizzes
+        termsBox.style.display = "none";
+        quizzesBox.style.display = "flex";
+        toggleBtn.textContent = "My Quizzes";
+        menuBtn.textContent = "My Quizzes";
+      }
+  
+      document.getElementById("toggleMenu").style.display = "none";
+    }
+  
     // Toggle menu show/hide
     document.getElementById("viewToggleBtn").addEventListener("contextmenu", function (e) {
       e.preventDefault();
@@ -340,6 +356,7 @@
       menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "flex" : "none";
     });
   </script>
+  
 </body>
 </html>
     
