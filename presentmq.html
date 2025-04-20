@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Present - Multiple Choice</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-size: 100px;
+    }
+
+    body {
+      background: linear-gradient(to right, #8D72E1, #e0b7fc);
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 40px;
+      background: linear-gradient(to right, #8D72E1, #6C4AB6);
+      border-bottom: 2px solid white;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 110px;
+      height: auto;
+    }
+
+    .title {
+      font-size: 50px;
+      font-family: fantasy;
+      color: white;
+      white-space: nowrap;
+    }
+
+    .main-container {
+      width: 80vw;  /* Set the width to 80% of the viewport width */
+      height: 70vh; /* Set the height to 80% of the viewport height */
+      margin: 100px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;  /* Make space between elements */
+    }
+
+    .question {
+      margin-bottom: 30px;
+      flex-grow: 1; /* Allow the question section to take available space */
+    }
+
+    .question h3 {
+      margin-bottom: 15px;
+      color: #6C4AB6;
+      font-size: 24px;
+    }
+
+    .options {
+      list-style: none;
+      padding-left: 0;
+      font-size: 10rem; /* Add or adjust this line */
+    }
+
+    .options li {
+      margin-bottom: 15px;
+      background: #f2e8ff;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 50px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .options li:hover {
+      background: #e0d1ff;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: #8D72E1;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #6C4AB6;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        margin: 20px;
+        padding: 20px;
+        font-size: 100vw;
+      }
+
+      .title {
+        font-size: 28px;
+      }
+
+      .question h3 {
+        font-size: 20px;
+      }
+
+      .options li {
+        font-size: 50px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 8px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-container">
+      <img src="logo.ico" alt="Logo" class="logo">
+      <span class="title">Multiple Choice Quiz</span>
+    </div>
+  </div>
+
+  <div class="main-container" id="quizContainer">
+    <!-- Quiz content will be generated here -->
+  </div>
+
+  <script>
+    let currentQuestionIndex = 0;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function generatePresentation() {
+      const container = document.getElementById("quizContainer");
+      const rawData = localStorage.getItem("selectedProject");
+
+      if (!rawData) {
+        container.innerHTML = "<p>No project data found.</p>";
+        console.log("No project data found in localStorage.");
+        return;
+      }
+
+      const data = JSON.parse(rawData);
+      if (data.length < 4) {
+        container.innerHTML = "<p>Need at least 4 terms to generate a quiz.</p>";
+        console.log("Not enough data to generate quiz.");
+        return;
+      }
+
+      shuffle(data);
+      const questions = data.slice(0, 10);
+
+      function renderQuestion() {
+        const question = questions[currentQuestionIndex];
+        const options = [question.definition];
+        const otherDefs = data
+          .filter(i => i.term !== question.term)
+          .map(i => i.definition);
+
+        shuffle(otherDefs);
+        options.push(...otherDefs.slice(0, 3));  // Add 3 wrong answers
+        shuffle(options);
+
+        container.innerHTML = `
+          <h3>Question ${currentQuestionIndex + 1}: What is the definition of <em>${question.term}</em>?</h3>
+          <ul class="options">
+            ${options.map(opt => `
+              <li>${opt}</li>
+            `).join("")}
+          </ul>
+
+          <div class="buttons">
+            <button id="prevBtn" ${currentQuestionIndex === 0 ? "disabled" : ""}>Previous</button>
+            <button id="nextBtn" ${currentQuestionIndex === questions.length - 1 ? "disabled" : ""}>Next</button>
+          </div>
+        `;
+
+        document.getElementById("nextBtn").addEventListener("click", nextQuestion);
+        document.getElementById("prevBtn").addEventListener("click", prevQuestion);
+
+        console.log(`Rendering question ${currentQuestionIndex + 1}`);
+      }
+
+      function nextQuestion() {
+        console.log("Next question clicked");
+        if (currentQuestionIndex < questions.length - 1) {
+          currentQuestionIndex++;
+          renderQuestion();
+        }
+      }
+
+      function prevQuestion() {
+        console.log("Previous question clicked");
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          renderQuestion();
+        }
+      }
+
+      renderQuestion();
+    }
+
+    window.onload = generatePresentation;
+  </script>
+</body>
+</html>

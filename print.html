@@ -140,6 +140,19 @@
                 display: none;
             }
         }
+
+        #quizPopup button {
+    background-color: #6C4AB6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#quizPopup button:hover {
+    background-color: #8D72E1;
+}
+
     </style>
 </head>
 <body>
@@ -150,8 +163,11 @@
         </div>
     </div>
 
-    <img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()">
-    
+    <a href="frontpage.html">
+        <img src="backbtn.png" alt="Back" class="back-btn">
+      </a>
+      
+
     <div class="button-container">
         <button id="generateQuizBtn">Generate Quiz</button>
         <button id="editProjectBtn">Edit</button>
@@ -177,11 +193,19 @@
             <tbody id="projectTableBody"></tbody>
         </table>
     </div>
+    
+    <div id="quizPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
+        <div style="background:white; padding:30px; border-radius:10px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+            <h2>Choose Quiz Type</h2>
+            <button onclick="generateQuiz('multiple')" style="margin:10px; padding:10px 20px; font-size:16px;">Multiple Choice</button>
+            <button onclick="generateQuiz('identification')" style="margin:10px; padding:10px 20px; font-size:16px;">Identification</button>
+            <br><br>
+            <button onclick="closeQuizPopup()" style="background:#ccc; padding:5px 10px; border:none;">Cancel</button>
+        </div>
+    </div>
+    
 
     <script>
-        function goBack() {
-            window.history.back();
-        }
 
         function toggleMenu() {
             let menu = document.getElementById("menuDropdown");
@@ -231,24 +255,55 @@
         }
 
         document.getElementById("editProjectBtn").addEventListener("click", function () {
-            let terms = [];
-            let rows = document.querySelectorAll("#projectTableBody tr");
-            rows.forEach(row => {
-                let term = row.cells[0].textContent;
-                let definition = row.cells[1].textContent;
-                terms.push({ term, definition });
-            });
+    // Get terms and definitions from the table
+    let terms = [];
+    let rows = document.querySelectorAll("#projectTableBody tr");
+    rows.forEach(row => {
+        let term = row.cells[0].textContent;
+        let definition = row.cells[1].textContent;
+        terms.push({ term, definition });
+    });
 
-            localStorage.setItem("terms", JSON.stringify(terms));
-            localStorage.setItem("projectTitle", document.getElementById("projectTitle").textContent);
+    // Store the terms and project title in localStorage
+    localStorage.setItem("terms", JSON.stringify(terms));
+    localStorage.setItem("projectTitle", document.getElementById("projectTitle").textContent);
 
-            window.location.href = "addpage.html?mode=edit";
-        });
+    // Redirect to addpage.html
+    window.location.href = "addpage.html?mode=edit";
+});
+document.getElementById("generateQuizBtn").addEventListener("click", function () {
+    document.getElementById("quizPopup").style.display = "flex";
+});
+
+function closeQuizPopup() {
+    document.getElementById("quizPopup").style.display = "none";
+}
+
+function generateQuiz(type) {
+    let terms = [];
+    let rows = document.querySelectorAll("#projectTableBody tr");
+    rows.forEach(row => {
+        let term = row.cells[0].textContent;
+        let definition = row.cells[1].textContent;
+        terms.push({ term, definition });
+    });
+
+    localStorage.setItem("quizData", JSON.stringify(terms));
+
+    if (type === "multiple") {
+        window.location.href = "multiplechoice.html";
+    } else if (type === "identification") {
+        window.location.href = "identification.html";
+    }
+}
+
+
 
         window.onload = function () {
             loadPrintTitle();
             loadProject();
         };
     </script>
+    
 </body>
 </html>

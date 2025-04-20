@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Present - Identification</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(to right, #8D72E1, #e0b7fc);
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 40px;
+      background: linear-gradient(to right, #8D72E1, #6C4AB6);
+      border-bottom: 2px solid white;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 80px;
+      height: auto;
+    }
+
+    .title {
+      font-size: 50px;
+      font-family: fantasy;
+      color: white;
+      white-space: nowrap;
+    }
+
+    .main-container {
+      position: relative;
+      width: 80vw;
+      height: 75vh; /* Adjusted height to make the container slightly smaller */
+      margin: 50px auto;
+      padding: 100px; /* Reduced padding to create more space for content */
+      background: #ab94ff;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between; /* Ensures content is evenly spaced */
+      align-items: center;
+      overflow-y: auto;
+    }
+
+    .question-group {
+      width: 100%;
+      height: 80%; /* Make sure it doesn't take too much space */
+      display: flex;
+      flex-direction: column;
+      gap: 50px; /* Adjust gap between questions */
+      justify-content: space-between; /* Make sure content stays centered */
+    }
+
+    .question {
+    background-color: #f7f5ff;
+    padding: 40px 60px; /* Adjusted padding to make the container bigger */
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); /* Darker shadow for better separation */
+    width: 100%; /* Adjusted width (you can change this as needed) */
+    min-height: calc(10px + 50% + 10px); /* Adds 20px to the height */
+    }
+
+
+    .question h3 {
+      color: #6C4AB6;
+      font-size: 70px; /* Increased the font size for the questions */
+      text-align: center;
+    }
+
+    .corner-buttons {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      padding: 0 30px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    button {
+      padding: 14px 30px;
+      background-color: #8D72E1;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #6C4AB6;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      .title {
+        font-size: 28px;
+      }
+
+      .question h3 {
+        font-size: 20px;
+      }
+
+      button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+
+      .corner-buttons {
+        padding: 0 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-container">
+      <img src="logo.ico" alt="Logo" class="logo">
+      <span class="title">Identification Quiz</span>
+    </div>
+  </div>
+
+  <div class="main-container" id="quizContainer">
+    <!-- Questions and buttons will be injected here -->
+  </div>
+
+  <script>
+    let currentPairIndex = 0;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function generatePresentation() {
+      const container = document.getElementById("quizContainer");
+      const rawData = localStorage.getItem("selectedProject");
+
+      if (!rawData) {
+        container.innerHTML = "<p>No project data found.</p>";
+        return;
+      }
+
+      const data = JSON.parse(rawData);
+      if (data.length < 4) {
+        container.innerHTML = "<p>Need at least 4 terms to generate a quiz.</p>";
+        return;
+      }
+
+      shuffle(data);
+      const questions = data.slice(0, 10);
+      const pairs = [];
+
+      for (let i = 0; i < questions.length; i += 2) {
+        pairs.push(questions.slice(i, i + 2));
+      }
+
+      function renderPair() {
+        const pair = pairs[currentPairIndex];
+        container.innerHTML = `
+          <div class="question-group">
+            ${pair.map((q, i) => `
+              <div class="question">
+                <h3>What is the definition of <em>${q.term}</em>?</h3>
+              </div>
+            `).join('')}
+          </div>
+          <div class="corner-buttons">
+            <button id="prevBtn" ${currentPairIndex === 0 ? "disabled" : ""}>Previous</button>
+            <button id="nextBtn" ${currentPairIndex === pairs.length - 1 ? "disabled" : ""}>Next</button>
+          </div>
+        `;
+
+        document.getElementById("nextBtn").addEventListener("click", () => {
+          if (currentPairIndex < pairs.length - 1) {
+            currentPairIndex++;
+            renderPair();
+          }
+        });
+
+        document.getElementById("prevBtn").addEventListener("click", () => {
+          if (currentPairIndex > 0) {
+            currentPairIndex--;
+            renderPair();
+          }
+        });
+      }
+
+      renderPair();
+    }
+
+    window.onload = generatePresentation;
+  </script>
+</body>
+</html>

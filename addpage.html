@@ -235,27 +235,27 @@
         </tr>
       </table>
     </div>
-  </div>
+  </div> 
 
   <script>
     window.onload = function () {
     // Check URL parameters to determine if we're creating a new project or editing
     const params = new URLSearchParams(window.location.search);
     const mode = params.get("mode");
-
+    
     if (mode !== "edit") {
         // Clear the saved data if not in edit mode (i.e., starting a new project)
         localStorage.removeItem("terms");
         localStorage.removeItem("projectTitle");
     }
-
+    
     // After clearing (or if in edit mode), load saved data (if any) into the page
     let storedTitle = localStorage.getItem("projectTitle");
     let storedTerms = JSON.parse(localStorage.getItem("terms"));
-
+    
     // If there's a saved title, fill the title input; otherwise leave it empty (or default)
     document.getElementById("quizTitle").value = storedTitle || "";
-
+    
     // Populate the term table if there are saved terms (typically for edit mode)
     if (storedTerms && storedTerms.length > 0) {
         const termTable = document.getElementById("termTable");
@@ -264,22 +264,22 @@
             row.insertCell(0).textContent = item.term;
             let definitionCell = row.insertCell(1);
             definitionCell.textContent = item.definition;
-
+            
             let editBtn = document.createElement("button");
             editBtn.classList.add("btn-edit");
             editBtn.innerHTML = `<img src="edit-icon.png" alt="Edit">`;
             editBtn.onclick = function() { editTerm(row); };
-
+            
             let deleteBtn = document.createElement("button");
             deleteBtn.classList.add("btn-delete");
             deleteBtn.innerHTML = `<img src="delete-icon.png" alt="Delete">`;
             deleteBtn.onclick = function() { deleteTerm(row); };
-
+            
             definitionCell.appendChild(editBtn);
             definitionCell.appendChild(deleteBtn);
         });
     }
-
+    
     // ... (any other onload code you already have)
 };
 
