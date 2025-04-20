@@ -17,7 +17,7 @@ if ($conn->connect_error) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $fullname = trim($_POST["fullname"]);
     $email = trim($_POST["email"]);
-    $password = trim($_POST["password"]);  // Now storing password directly (⚠️ Not Secure)
+    $password = trim($_POST["password"]);
 
     if (empty($fullname) || empty($email) || empty($password)) {
         echo json_encode(["success" => false, "message" => "All fields are required"]);
@@ -35,9 +35,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    // Store the password as plain text (⚠️ Security risk)
+    // Hash the password before storing
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    // Insert the new user
     $stmt = $conn->prepare("INSERT INTO users (fullname, email, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $fullname, $email, $password);
+    $stmt->bind_param("sss", $fullname, $email, $hashedPassword);
 
     if ($stmt->execute()) {
         echo json_encode(["success" => true, "message" => "Signup successful"]);
@@ -49,5 +52,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 $conn->close();
-
 ?>
