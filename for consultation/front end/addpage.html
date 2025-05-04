@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quizzler</title>
+  <link rel="icon" type="image/x-icon" href="logo.ico" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to right, #8D72E1, #6C4AB6);
+      color: white;
+    }
+    .header1 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: linear-gradient(to right, #8D72E1, #6C4AB6);
+      border-bottom: 2px solid white;
+      z-index: 1000;
+    }
+    .logo {
+      width: 80px;
+    }
+    .title {
+      font-size: 50px;
+      font-family: fantasy;
+      color: white;
+    }
+    .back-btn {
+      width: 50px;
+      height: auto;
+      cursor: pointer;
+      position: absolute;
+      top: 120px;
+      left: 20px;
+    }
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-top: 80px;
+    }
+    .title-container {
+      width: 70%;
+      max-width: 1000px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 50px;
+      padding-top: 30px;
+      padding-bottom: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px;
+      border-radius: 15px;
+      width: 1000px;
+      text-align: center;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.8);
+      color: black;
+      font-size: 16px;
+    }
+    textarea {
+      resize: none;
+      height: 100px;
+    }
+    .btn {
+      background: #4CAF50;
+      color: white;
+      padding: 12px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+    .add-btn {
+      background: #008CBA;
+    }
+    .add-btn:hover {
+      background: #0073a5;
+    }
+    .grey-container {
+      position: fixed;
+      bottom: -100%;
+      width: 80%;
+      height: 100vh;
+      background: #b7b1f2c7;
+      padding: 20px;
+      border-radius: 10px 10px 0 0;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      transition: bottom 0.4s ease-in-out;
+      overflow-y: auto;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+    .toggle-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #B7B1F2;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 18px;
+      z-index: 2500;
+    }
+    .term-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      background: white;
+    }
+    .term-table th:nth-child(1),
+    .term-table td:nth-child(1) {
+      width: 25%;
+      word-wrap: break-word;
+      overflow: hidden;
+    }
+    .term-table th:nth-child(2),
+    .term-table td:nth-child(2) {
+      width: 75%;
+      word-wrap: break-word;
+      overflow: hidden;
+      position: relative;
+    }
+    .term-table th,
+    .term-table td {
+      border: 1px solid black;
+      padding: 10px;
+      text-align: center;
+      background: white;
+      vertical-align: top;
+      color: black;
+    }
+    .term-table tr:hover {
+      background-color: #f1f1f1;
+    }
+    .btn-edit, .btn-delete {
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+    }
+    .btn-edit img, .btn-delete img {
+      width: 100%;
+      height: 100%;
+    }
+    .saved-terms-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      position: relative;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+<form action="addpage.php" method="POST">
+  <input type="hidden" name="terms[]" id="termsInput">
+  <input type="hidden" name="definitions[]" id="definitionsInput">
+  <input type="hidden" name="projectTitle" id="projectTitleInput">
+
+  <div class="header1">
+    <img src="logo.ico" alt="Logo" class="logo" />
+    <span class="title">QUIZZLER</span>
+  </div>
+
+  <img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()" />
+
+  <div class="wrapper">
+    <div class="title-container">
+      <h2>TITLE</h2>
+      <input type="text" id="title_id" placeholder="Enter Title" name="title_id"/>
+    </div>
+
+    <div class="container">
+      <h2>ADD TERM AND DEFINITION</h2>
+      <input type="text" id="termss" placeholder="Enter Term" name="termss"/>
+      <textarea id="definitionss" placeholder="Enter Definition" name="definitionss"></textarea>
+      <button class="btn add-btn" type="button" onclick="addTerm()">Add</button>
+      <button class="btn" id="saveBtn" type="button">Save</button>
+    </div>
+
+    <button class="toggle-btn" type="button" onclick="toggleContainer()">▲ Show Saved Terms</button>
+
+    <div class="grey-container" id="greyContainer">
+      <br />
+      <div class="saved-terms-header">
+        <h2>SAVED TERMS</h2>
+      </div>
+      <table class="term-table" id="termTable">
+        <tr>
+          <th>Term</th>
+          <th>Definition</th>
+        </tr>
+      </table>
+    </div>
+  </div> 
+</form>
+
+<script>
+  window.onload = function () {
+    // Load stored title and terms from localStorage
+    const storedTitle = localStorage.getItem("projectTitle");
+    const storedTerms = JSON.parse(localStorage.getItem("terms"));
+
+    if (storedTitle) {
+      document.getElementById("title_id").value = storedTitle;
+    }
+
+    if (storedTerms && storedTerms.length > 0) {
+      const termTable = document.getElementById("termTable");
+      storedTerms.forEach(item => {
+        let row = termTable.insertRow(-1);
+        row.insertCell(0).textContent = item.term;
+        row.insertCell(1).textContent = item.definition;
+      });
+    }
+  };
+
+  // Function to add term and definition
+  function addTerm() {
+    const term = document.getElementById("termss").value.trim();
+    const definition = document.getElementById("definitionss").value.trim();
+
+    if (!term || !definition) {
+      alert("Both fields are required!");
+      return;
+    }
+
+    let storedTerms = JSON.parse(localStorage.getItem("terms")) || [];
+
+    // Check if the term already exists
+    if (storedTerms.some(item => item.term === term)) {
+      alert("This term already exists.");
+      return;
+    }
+
+    // Add term and definition to localStorage
+    storedTerms.push({ term, definition });
+    localStorage.setItem("terms", JSON.stringify(storedTerms));
+
+    // Update the table with the new term
+    const termTable = document.getElementById("termTable");
+    let row = termTable.insertRow(-1);
+    row.insertCell(0).textContent = term;
+    row.insertCell(1).textContent = definition;
+
+    // Clear inputs after adding
+    clearInputs();
+  }
+
+  // Clear term and definition inputs
+  function clearInputs() {
+    document.getElementById("termss").value = "";
+    document.getElementById("definitionss").value = "";
+  }
+
+  // Function to handle save button click
+  document.getElementById("saveBtn").addEventListener("click", function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    const storedTerms = JSON.parse(localStorage.getItem("terms")) || [];
+    const storedTitle = document.getElementById("title_id").value.trim();
+
+    if (!storedTitle) {
+        alert("Please enter a quiz title!");
+        return;
+    }
+
+    if (storedTerms.length === 0) {
+        alert("Please add at least one term and definition!");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('title_id', storedTitle);
+    formData.append('terms[]', JSON.stringify(storedTerms.map(item => item.term)));
+    formData.append('definitions[]', JSON.stringify(storedTerms.map(item => item.definition)));
+
+    fetch('addpage.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            alert(data.message); // Show success alert
+            localStorage.removeItem("terms"); // clear saved terms
+            window.location.reload(); // reload page after save
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(error => {
+        alert("An unexpected error occurred.");
+        console.error(error);
+    });
+});
+
+
+  // Revised toggleContainer to show saved terms without page reload
+  function toggleContainer() {
+    const greyContainer = document.getElementById("greyContainer");
+    const toggleButton = document.querySelector(".toggle-btn");
+
+    // Check the current state of the grey container (if it's hidden or shown)
+    if (greyContainer.style.bottom === "0px") {
+      greyContainer.style.bottom = "-100%"; // Hide the container
+      toggleButton.textContent = "▲ Show Saved Terms"; // Change button text
+    } else {
+      greyContainer.style.bottom = "0"; // Show the container
+      toggleButton.textContent = "▼ Hide Saved Terms"; // Change button text
+
+      // Populate saved terms into the grey container
+      const storedTerms = JSON.parse(localStorage.getItem("terms")) || [];
+      const termTable = document.getElementById("termTable");
+
+      // Clear the current table before populating
+      termTable.innerHTML = `
+  <tr>
+    <th>Term</th>
+    <th>Definition</th>
+  </tr>
+`;
+
+
+      // Populate the table with saved terms
+      storedTerms.forEach(item => {
+        let row = termTable.insertRow(-1);
+        row.insertCell(0).textContent = item.term;
+        row.insertCell(1).textContent = item.definition;
+      });
+    }
+  }
+</script>

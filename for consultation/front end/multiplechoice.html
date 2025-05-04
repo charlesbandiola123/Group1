@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.ico">
+    <title>Quizzler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #8D72E1, #e0b7fc);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #6C4AB6;
+        }
+
+        .question {
+            margin-bottom: 25px;
+        }
+
+        .question h3 {
+            margin: 0 0 10px;
+        }
+
+        .options {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .options li {
+            margin-bottom: 8px;
+            background: #f2e8ff;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #6C4AB6;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #8D72E1;
+        }
+
+        .save-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .save-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Multiple Choice Quiz</h1>
+        <div id="quizContainer"></div>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <a href="print.html" class="back-btn">Back to Project</a>
+            <button class="back-btn" onclick="window.open('presentmq.html', '_blank')">Present</button>
+            <button class="save-btn" onclick="saveQuiz()">Save Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function generateQuiz() {
+            const quizContainer = document.getElementById("quizContainer");
+            const rawData = localStorage.getItem("selectedProject");
+
+            if (!rawData) {
+                quizContainer.innerHTML = "<p>No project data found.</p>";
+                return;
+            }
+
+            const data = JSON.parse(rawData);
+            if (data.length < 4) {
+                quizContainer.innerHTML = "<p>Need at least 4 terms to generate a quiz.</p>";
+                return;
+            }
+
+            shuffle(data);
+            const questions = data.slice(0, 10);
+
+            questions.forEach((item, index) => {
+                const options = [item.definition];
+                const otherDefs = data
+                    .filter(i => i.term !== item.term)
+                    .map(i => i.definition);
+
+                shuffle(otherDefs);
+                options.push(...otherDefs.slice(0, 3)); // Add 3 wrong choices
+                shuffle(options);
+
+                const questionDiv = document.createElement("div");
+                questionDiv.className = "question";
+
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. What is the definition of <em>${item.term}</em>?</h3>
+                    <ul class="options">
+                        ${options.map(opt => `
+                            <li>${opt}</li>
+                        `).join("")}
+                    </ul>
+                `;
+
+                quizContainer.appendChild(questionDiv);
+            });
+        }
+
+        function saveQuiz() {
+            const rawData = localStorage.getItem("selectedProject");
+
+            if (!rawData) {
+                alert("No project data found.");
+                return;
+            }
+
+            const data = JSON.parse(rawData);
+            const quizData = {
+                title: "Multiple Choice Quiz",
+                questions: data.slice(0, 10) // Save only the first 10 questions
+            };
+
+            let savedQuizzes = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
+            savedQuizzes.push(quizData);
+            localStorage.setItem("savedQuizzes", JSON.stringify(savedQuizzes));
+
+            alert("Quiz saved! Go to the front page to view your saved quizzes.");
+        }
+
+        // Generate the quiz on page load
+        window.onload = generateQuiz;
+    </script>
+</body>
+</html>
