@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quizzler</title>
+  <link rel="icon" type="image/x-icon" href="logo.ico">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #8D72E1, #e0b7fc);
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 40px;
+      background: linear-gradient(to right, #8D72E1, #6C4AB6);
+      border-bottom: 2px solid white;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 80px;
+      height: auto;
+    }
+
+    .title {
+      font-size: 60px;
+      font-family: fantasy;
+      color: white;
+      white-space: nowrap;
+    }
+
+    .back-btn {
+      width: 50px;
+      height: auto;
+      cursor: pointer;
+      position: absolute;
+      top: 120px;
+      left: 20px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-top: 130px;
+    }
+
+    #generateQuizBtn, #editProjectBtn {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #6C4AB6;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #generateQuizBtn:hover, #editProjectBtn:hover {
+      background-color: #8D72E1;
+    }
+
+    .paper {
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border: 1px solid black;
+      width: 8.27in;
+      height: 11.69in;
+      box-sizing: border-box;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid black;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    td {
+      pointer-events: none;
+    }
+
+    @media print {
+      .header, .button-container {
+        display: none;
+      }
+    }
+
+    #quizPopup button {
+      background-color: #8D72E1;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #quizPopup button:hover {
+      background-color: #a388f5;
+    }
+
+    #itemsRequired {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f7f7f7;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      display: inline-block;
+      text-align: left;
+      width: 90%;
+    }
+
+    .error-message {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+
+    .selected {
+      background-color: #5835c0;
+      color: white;
+      border: 2px solid #6C4AB6;
+      box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+    }
+
+  </style>
+</head>
+<body>
+    <div class="header">
+      <div class="logo-container">
+        <img src="logo.ico" alt="Logo" class="logo" />
+        <span class="title">QUIZZLER</span>
+      </div>
+    </div>
+
+    <a href="frontpage.html">
+      <img src="backbtn.png" alt="Back" class="back-btn">
+    </a>
+
+    <div class="button-container">
+      <button id="generateQuizBtn" onclick="showQuizPopup()">Generate Quiz</button>
+      <button id="editProjectBtn" onclick="editProject()">Edit</button>
+    </div>
+
+    <div id="paper" class="paper">
+      <h2 id="projectTitle" contenteditable="false">Project Details</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Term</th>
+            <th>Definition</th>
+          </tr>
+        </thead>
+        <tbody id="projectTableBody"></tbody>
+      </table>
+    </div>
+
+    <div id="quizPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
+      <div style="background:white; padding:30px; border-radius:10px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+        <h2>Choose Quiz Type</h2>
+        <button id="multipleChoiceBtn" onclick="selectQuizType('multiple')" style="margin:10px; padding:10px 20px; font-size:16px;">Multiple Choice</button>
+        <button id="identificationBtn" onclick="selectQuizType('identification')" style="margin:10px; padding:10px 20px; font-size:16px;">Identification</button>
+        <br><br>
+        <strong>number of items:</strong>
+        <input type="number" id="numQuestions" placeholder="" style="padding:5px; width:60px;">
+        <br><br>
+        <button onclick="generateQuiz(selectedQuizType)" style="background:#ccc; padding:5px 10px; border:none;">Generate</button>
+        <button onclick="closeQuizPopup()" style="background:#ccc; padding:5px 10px; border:none;">Cancel</button>
+      </div>
+    </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    let selectedQuizType = "";
+
+    function showQuizPopup() {
+      document.getElementById("quizPopup").style.display = "flex";
+    }
+
+    function closeQuizPopup() {
+      document.getElementById("quizPopup").style.display = "none";
+
+    }
+
+    function selectQuizType(type) {
+      selectedQuizType = type;
+
+      const multipleChoiceBtn = document.getElementById("multipleChoiceBtn");
+      const identificationBtn = document.getElementById("identificationBtn");
+
+      multipleChoiceBtn.classList.remove("selected");
+      identificationBtn.classList.remove("selected");
+
+      if (type === "multiple") {
+        multipleChoiceBtn.classList.add("selected");
+      } else if (type === "identification") {
+        identificationBtn.classList.add("selected");
+      }
+    }
+
+    function generateQuiz(type) {
+      let terms = [];
+      let rows = document.querySelectorAll("#projectTableBody tr");
+
+      const numItemsSelected = parseInt(document.getElementById("numQuestions").value);
+      const termsCount = rows.length;
+
+      if (isNaN(numItemsSelected) || numItemsSelected < 1) {
+        console.error("Please enter a valid number of items to generate.");
+        return;
+      }
+
+      if (numItemsSelected > termsCount) {
+         console.error(`You can only generate up to ${termsCount} items.`);
+        return;
+      } else {
+
+      }
+      rows.forEach(row => {
+        let term = row.cells[0].textContent;
+        let definition = row.cells[1].textContent;
+        terms.push({ term, definition });
+      });
+
+      if(terms.length > 0) {
+          terms = terms.slice(0, numItemsSelected);
+      } else {
+          console.error("No terms found to generate quiz from.");
+          return;
+      }
+
+      localStorage.setItem("quizData", JSON.stringify(terms));
+
+      if (type === "multiple") {
+        window.location.href = "multiplechoice.html";
+      } else if (type === "identification") {
+        window.location.href = "identification.html";
+      } else {
+          console.error("No quiz type selected.");
+      }
+    }
+
+    function editProject() {
+      window.location.href = "addpage.html";
+    }
+
+    function loadPrintTitle() {
+      let savedTitle = localStorage.getItem("projectTitle") || "Sample Title";
+      let titleElement = document.getElementById("projectTitle");
+      if (titleElement) {
+        titleElement.textContent = savedTitle;
+      }
+    }
+
+    function loadProject() {
+      let project = [];
+      try {
+          project = JSON.parse(localStorage.getItem("selectedProject") || "[]");
+           if (!Array.isArray(project)) {
+                console.error("Stored project data is not an array. Resetting.");
+                project = [];
+            }
+      } catch (e) {
+          console.error("Error parsing project data from localStorage:", e);
+          project = [];
+      }
+
+
+      let titleElement = document.getElementById("projectTitle");
+      let tableBody = document.getElementById("projectTableBody");
+
+      tableBody.innerHTML = "";
+
+      titleElement.textContent = localStorage.getItem("projectTitle") || "Project Details";
+
+      if (project && project.length > 0) {
+        project.forEach(item => {
+            if (item && typeof item.term !== 'undefined' && typeof item.definition !== 'undefined') {
+                 let row = tableBody.insertRow();
+                 let cell1 = row.insertCell();
+                 let cell2 = row.insertCell();
+                 cell1.textContent = item.term;
+                 cell2.textContent = item.definition;
+            } else {
+                console.warn("Skipping invalid item in project data:", item);
+            }
+        });
+      } else {
+          let row = tableBody.insertRow();
+          let cell = row.insertCell();
+          cell.colSpan = 2;
+          cell.textContent = "No project terms loaded.";
+          cell.style.textAlign = "center";
+          cell.style.fontStyle = "italic";
+      }
+    }
+
+    window.onload = function() {
+      loadPrintTitle();
+      loadProject();
+    };
+    </script>
+
+</body>
+</html>
