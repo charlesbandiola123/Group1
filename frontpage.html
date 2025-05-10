@@ -39,7 +39,7 @@
     }
 
     .title {
-      font-size: 50px;
+      font-size: 60px;
       font-family: fantasy;
       color: white;
       white-space: nowrap;
@@ -100,30 +100,16 @@
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
       text-align: center;
       position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
-
-    .menu-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: white;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      padding: 5px;
-    }
-
-    .menu-button:hover {
-      background: rgb(240, 240, 240);
-      border-radius: 5px;
+    .project-box h3 {
+      display: inline-block;
+      text-align: center;
+      width: 100%;
     }
 
     .menu-container {
       position: absolute;
-      top: 45px;
+      top: 50px;
       left: 0;
       background: white;
       border: 1px solid #ccc;
@@ -132,6 +118,7 @@
       z-index: 999;
       display: none;
       flex-direction: column;
+      min-width: 160px;
     }
 
     .menu-container button {
@@ -151,6 +138,9 @@
     .toggle-section {
       margin-top: 20px;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
 
     .toggle-button {
@@ -161,6 +151,23 @@
       color: white;
       font-size: 18px;
       cursor: pointer;
+    }
+
+    .delete-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 5px 10px;
+      border-radius: 30px;
+      border: none;
+      background-color: #e74d3c00;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #ecd5d200;
     }
 
     @media (max-width: 600px) {
@@ -204,159 +211,170 @@
     </a>
 
     <div class="toggle-section">
-        <button id="viewToggleBtn" class="toggle-button">My Project</button>
+      <button id="viewToggleBtn" class="toggle-button">My Project ▼</button>
       <div id="toggleMenu" class="menu-container">
-        <button id="switchViewBtn">My Quizzes</button>
+        <button data-view="project">My Project</button>
+        <button data-view="quiz">My Quizzes</button>
       </div>
     </div>
 
     <div class="saved-terms-container" id="termsBox"></div>
-    <div class="saved-terms-container" id="quizzesBox" style="display: none;">
-      <p>This is where quizzes will be shown.</p>
-    </div>
+    <div class="saved-terms-container" id="quizzesBox" style="display: none;"></div>
   </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      document.querySelector(".signup").addEventListener("click", function () {
-        window.location.href = "signup.html";
-      });
-  
-      document.querySelector(".login").addEventListener("click", function () {
-        window.location.href = "login.html";
-      });
+      // Add null checks for querySelector just in case these elements aren't on every page
+      const signupButton = document.querySelector(".signup");
+      if (signupButton) {
+          signupButton.addEventListener("click", function () {
+            window.location.href = "signup.php";
+          });
+      }
+
+      const loginButton = document.querySelector(".login");
+      if (loginButton) {
+          loginButton.addEventListener("click", function () {
+            window.location.href = "login.php";
+          });
+      }
+
+      const dropdownToggle = document.getElementById("viewToggleBtn");
+      const dropdownMenu = document.getElementById("toggleMenu");
+      const termsBox = document.getElementById("termsBox"); // For "My Project"
+      const quizzesBox = document.getElementById("quizzesBox"); // For "My Quizzes"
+
+      if (dropdownToggle && dropdownMenu && termsBox && quizzesBox) {
+          dropdownToggle.addEventListener("click", () => {
+            dropdownMenu.style.display = dropdownMenu.style.display === "flex" ? "none" : "flex";
+          });
+
+          dropdownMenu.addEventListener("click", function (e) {
+            if (e.target.tagName === "BUTTON") {
+              const view = e.target.getAttribute("data-view");
+              if (view === "project") {
+                termsBox.style.display = "flex";
+                quizzesBox.style.display = "none";
+                dropdownToggle.textContent = "My Project ▼";
+              } else if (view === "quiz") {
+                termsBox.style.display = "none";
+                quizzesBox.style.display = "flex";
+                dropdownToggle.textContent = "My Quizzes ▼";
+              }
+              dropdownMenu.style.display = "none";
+            }
+          });
+      } else {
+          console.warn("Dropdown toggle or menu elements not found. Dropdown functionality may be affected.");
+      }
     });
-  
+
     window.onload = function () {
       let projects = JSON.parse(localStorage.getItem("projects")) || {};
-      let displayContainer = document.getElementById("termsBox");
-      let quizzesBox = document.getElementById("quizzesBox");
-  
-      // Clear previous content
-      displayContainer.innerHTML = "";
-      quizzesBox.innerHTML = "";
-  
-      // Load projects
-      if (Object.keys(projects).length > 0) {
-        Object.keys(projects).forEach((title) => {
-          let projectBox = document.createElement("div");
-          projectBox.classList.add("project-box");
-  
-          let menuButton = document.createElement("button");
-          menuButton.classList.add("menu-button");
-          menuButton.innerHTML = "⋮";
-  
-          menuButton.onclick = function (event) {
-            event.stopPropagation();
-            document.querySelectorAll(".menu-container").forEach(menu => menu.style.display = "none");
-            let menu = this.nextElementSibling;
-            menu.style.display = menu.style.display === "flex" ? "none" : "flex";
-          };
-  
-          let menuContainer = document.createElement("div");
-          menuContainer.classList.add("menu-container");
-  
-          let editButton = document.createElement("button");
-          editButton.textContent = "Edit";
-          editButton.onclick = function () { editProject(title); };
-  
-          let deleteButton = document.createElement("button");
-          deleteButton.textContent = "Delete";
-          deleteButton.onclick = function () { deleteProject(title); };
-  
-          menuContainer.appendChild(editButton);
-          menuContainer.appendChild(deleteButton);
-  
-          projectBox.innerHTML = `<h3>${title}</h3>`;
-          projectBox.appendChild(menuButton);
-          projectBox.appendChild(menuContainer);
-  
-          projectBox.addEventListener("click", function () {
-            if (projects[title]) {
-              localStorage.setItem("selectedProject", JSON.stringify(projects[title]));
-              localStorage.setItem("projectTitle", title);
-              window.location.href = "print.html";
-            }
-          });
-  
-          displayContainer.appendChild(projectBox);
-        });
-  
-        document.addEventListener("click", function (event) {
-          document.querySelectorAll(".menu-container").forEach(menu => {
-            if (!menu.contains(event.target) && !event.target.classList.contains("menu-button")) {
-              menu.style.display = "none";
-            }
-          });
-        });
+      let displayContainer = document.getElementById("termsBox"); // For "My Project" view
+
+      if (!displayContainer) {
+          console.error("Element with ID 'termsBox' not found for displaying projects.");
       } else {
-        displayContainer.innerHTML = "<p>No saved projects yet.</p>";
+          displayContainer.innerHTML = ""; // Clear existing project boxes
+          
+          if (Object.keys(projects).length > 0) {
+            Object.keys(projects).forEach((title) => {
+              let projectBox = document.createElement("div");
+              projectBox.classList.add("project-box");
+
+              const deleteBtn = document.createElement("button");
+              deleteBtn.classList.add("delete-btn");
+              deleteBtn.innerHTML = "🗑️";
+              deleteBtn.addEventListener("click", function (e) {
+                e.stopPropagation(); // Prevent projectBox click event
+
+                // --- CONFIRMATION FOR PROJECT DELETION ---
+                if (confirm("Are you sure you want to delete this project?")) {
+                    delete projects[title];
+                    localStorage.setItem("projects", JSON.stringify(projects));
+                    projectBox.remove();
+                    // Optional: Update display if no projects left
+                    if (Object.keys(projects).length === 0) {
+                        displayContainer.innerHTML = "<p>No saved projects yet.</p>";
+                    }
+                }
+                // --- END PROJECT DELETION CONFIRMATION ---
+              });
+
+              // Set project title first, then append delete button
+              projectBox.innerHTML = `<h3>${title}</h3>`;
+              projectBox.appendChild(deleteBtn);
+
+              projectBox.addEventListener("click", function () {
+                localStorage.setItem("selectedProject", JSON.stringify(projects[title]));
+                localStorage.setItem("projectTitle", title);
+                window.location.href = "print.html"; // Or your project detail/action page
+              });
+
+              displayContainer.appendChild(projectBox);
+            });
+          } else {
+            displayContainer.innerHTML = "<p>No saved projects yet.</p>";
+          }
       }
-  
-      // Load quizzes
-      loadSavedQuizzes();
+      loadSavedQuizzes(); // Call this to load quizzes into their separate container
     };
-  
+
     function loadSavedQuizzes() {
       const quizzes = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
-      const quizzesBox = document.getElementById("quizzesBox");
-  
-      quizzesBox.innerHTML = ""; // Clear previous content
-  
+      const quizzesBox = document.getElementById("quizzesBox"); // For "My Quizzes" view
+
+      if (!quizzesBox) {
+          console.error("Element with ID 'quizzesBox' not found for displaying quizzes.");
+          return;
+      }
+
+      quizzesBox.innerHTML = ""; // Clear existing quiz boxes
+
       if (quizzes.length > 0) {
         quizzes.forEach((quiz, index) => {
           const quizBox = document.createElement("div");
-          quizBox.classList.add("project-box");
-          quizBox.innerHTML = `<h3>${quiz.title} #${index + 1}</h3>`;
-  
-          quizBox.addEventListener("click", function () {
-            localStorage.setItem("selectedQuiz", JSON.stringify(quiz));
-            // You can navigate to a separate quiz view page if you like
-            alert("Quiz selected: You can redirect or preview here.");
+          quizBox.classList.add("project-box"); // Assuming same styling
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.classList.add("delete-btn");
+          deleteBtn.innerHTML = "🗑️";
+          deleteBtn.addEventListener("click", function (e) {
+            e.stopPropagation(); // Prevent quizBox click event
+
+            // --- CONFIRMATION FOR QUIZ DELETION ---
+            if (confirm("Are you sure you want to delete this quiz?")) { // <<< CONFIRMATION ADDED HERE
+                quizzes.splice(index, 1); // Remove quiz from array
+                localStorage.setItem("savedQuizzes", JSON.stringify(quizzes)); // Update localStorage
+                quizBox.remove(); // Remove the quiz box from the DOM
+                // Optional: Update display if no quizzes left
+                if (quizzes.length === 0) {
+                    quizzesBox.innerHTML = "<p>No saved quizzes yet.</p>";
+                }
+            }
+            // --- END QUIZ DELETION CONFIRMATION ---
           });
-  
+
+          // Set quiz title first, then append delete button
+          quizBox.innerHTML = `<h3>${quiz.title}</h3>`;
+          quizBox.appendChild(deleteBtn);
+
+          quizBox.addEventListener("click", function () {
+            localStorage.setItem("selectedQuiz", JSON.stringify(quiz)); // Store the selected quiz data
+            if (quiz.type === "multiplechoice") {
+              window.location.href = "multiplechoice.html"; 
+            } else if (quiz.type === "identification") {
+              window.location.href = "identification.html"; 
+            }
+            // Add other quiz types if needed
+          });
           quizzesBox.appendChild(quizBox);
         });
       } else {
         quizzesBox.innerHTML = "<p>No saved quizzes yet.</p>";
       }
     }
-  
-    // Toggle between project and quizzes view
-    document.getElementById("viewToggleBtn").addEventListener("click", switchView);
-    document.getElementById("switchViewBtn").addEventListener("click", switchView);
-  
-    function switchView() {
-      const termsBox = document.getElementById("termsBox");
-      const quizzesBox = document.getElementById("quizzesBox");
-      const toggleBtn = document.getElementById("viewToggleBtn");
-      const menuBtn = document.getElementById("switchViewBtn");
-  
-      if (termsBox.style.display === "none") {
-        // Currently on quizzes, switch to projects
-        termsBox.style.display = "flex";
-        quizzesBox.style.display = "none";
-        toggleBtn.textContent = "My Project";
-        menuBtn.textContent = "My Project";
-      } else {
-        // Currently on projects, switch to quizzes
-        termsBox.style.display = "none";
-        quizzesBox.style.display = "flex";
-        toggleBtn.textContent = "My Quizzes";
-        menuBtn.textContent = "My Quizzes";
-      }
-  
-      document.getElementById("toggleMenu").style.display = "none";
-    }
-  
-    // Toggle menu show/hide
-    document.getElementById("viewToggleBtn").addEventListener("contextmenu", function (e) {
-      e.preventDefault();
-      const menu = document.getElementById("toggleMenu");
-      menu.style.display = (menu.style.display === "none" || menu.style.display === "") ? "flex" : "none";
-    });
   </script>
-  
 </body>
 </html>
-    
