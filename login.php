@@ -3,7 +3,7 @@ session_start();
 
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
     // Redirect to frontpage if already logged in
-    header("Location: frontpage.html"); 
+    header("Location: frontpage.html");
     exit();
 }
 
@@ -11,59 +11,67 @@ $login_error = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    include "database.php"; 
+    include "database.php"; // Make sure this file correctly establishes $conn
 
     if ($conn->connect_error) {
-        die("Database connection failed: " . $conn->connect_error);
-    }
-
-    if (!isset($_POST['email'], $_POST['password']) || empty(trim($_POST['email'])) || empty(trim($_POST['password']))) {
-        $login_error = "Please enter both email and password!";
+        // It's better to show a generic error on the page than die here
+        $login_error = "Database connection error. Please try again later.";
+        // For debugging: error_log("Database connection failed: " . $conn->connect_error);
     } else {
-        $email = trim($_POST['email']);
-        $password = trim($_POST['password']);
-
-        $stmt = $conn->prepare("SELECT user_id, email, password FROM users WHERE email = ?");
-        if ($stmt === false) {
-            die("Prepare failed: " . $conn->error); 
-        }
-
-        $stmt->bind_param("s", $email);
-
-        if (!$stmt->execute()) {
-            die("Execute failed: " . $stmt->error); 
-        }
-
-        $stmt->store_result();
-
-        if ($stmt->num_rows > 0) {
-            $stmt->bind_result($user_id, $db_email, $hashed_password);
-            $stmt->fetch();
-
-            if (password_verify($password, $hashed_password)) {
-                session_regenerate_id(true); 
-                $_SESSION['loggedin'] = true;
-                $_SESSION['email'] = $db_email;
-                $_SESSION['user_id'] = $user_id;
-
-                // Redirect to frontpage.html on successful login
-                header("Location: frontpage.html"); 
-                exit(); 
-
-            } else {
-                $login_error = "Invalid email or password!"; 
-            }
+        if (!isset($_POST['email'], $_POST['password']) || empty(trim($_POST['email'])) || empty(trim($_POST['password']))) {
+            $login_error = "Please enter both email and password!";
         } else {
-            $login_error = "Invalid email or password!"; 
+            $email = trim($_POST['email']);
+            $password_form = trim($_POST['password']); // Renamed to avoid confusion
+
+            // Modified SQL to fetch fullname
+            $stmt = $conn->prepare("SELECT user_id, fullname, email, password FROM users WHERE email = ?");
+            if ($stmt === false) {
+                $login_error = "Database query error. Please try again.";
+                // For debugging: error_log("Prepare failed: " . $conn->error);
+            } else {
+                $stmt->bind_param("s", $email);
+
+                if (!$stmt->execute()) {
+                    $login_error = "Database execution error. Please try again.";
+                    // For debugging: error_log("Execute failed: " . $stmt->error);
+                } else {
+                    $stmt->store_result();
+
+                    if ($stmt->num_rows > 0) {
+                        // Bind result variables, including fullname
+                        $stmt->bind_result($user_id, $db_fullname, $db_email, $hashed_password);
+                        $stmt->fetch();
+
+                        if (password_verify($password_form, $hashed_password)) {
+                            session_regenerate_id(true);
+                            $_SESSION['loggedin'] = true;
+                            $_SESSION['email'] = $db_email;
+                            $_SESSION['user_id'] = $user_id;
+                            $_SESSION['username'] = $db_fullname; // Store fullname in session
+
+                            // Set cookies for frontpage.html
+                            $cookie_expiry = time() + (86400 * 30); // 30 days
+                            setcookie("isLoggedIn", "true", $cookie_expiry, "/");
+                            setcookie("username", trim($db_fullname), $cookie_expiry, "/");
+
+                            // Redirect to frontpage.html on successful login
+                            header("Location: frontpage.html");
+                            exit();
+
+                        } else {
+                            $login_error = "Invalid email or password!";
+                        }
+                    } else {
+                        $login_error = "Invalid email or password!";
+                    }
+                }
+                $stmt->close();
+            }
         }
-
-        $stmt->close(); 
-    } 
-
-    $conn->close(); 
-
-} 
-
+        $conn->close();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -110,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           color: white;
           white-space: nowrap;
         }
-        
+
         .container {
             background: white;
             padding: 30px 40px;
@@ -191,11 +199,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         ?>
 
-        <form action="login.php" method="POST">
-            <input type="email" name="email" placeholder="Email" required value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"><br> 
+        <form action="login.php" method="POST"> <!-- Ensure action points to the correct PHP file -->
+            <input type="email" name="email" placeholder="Email" required value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"><br>
             <input type="password" name="password" placeholder="Password" required><br>
             <button type="submit">Login</button>
         </form>
+        <p style="margin-top:15px;">Don't have an account? <a href="signup.php">Sign up here</a></p>
     </div>
 </body>
 </html>
