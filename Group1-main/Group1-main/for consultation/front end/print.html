@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzler</title>
+    <link rel="icon" type="image/x-icon" href="logo.ico"> 
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #8D72E1, #e0b7fc);
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: linear-gradient(to right, #8D72E1, #6C4AB6);
+            border-bottom: 2px solid white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .title {
+            font-size: 50px;
+            font-family: fantasy;
+            color: white;
+        }
+
+        .back-btn {
+            width: 50px;
+            height: auto;
+            cursor: pointer;
+            position: absolute;
+            top: 120px;
+            left: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 130px;
+        }
+
+        #generateQuizBtn, #editProjectBtn, .menu-btn {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #6C4AB6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #generateQuizBtn:hover, #editProjectBtn:hover, .menu-btn:hover {
+            background-color: #8D72E1;
+        }
+
+        .menu-container {
+            position: relative;
+        }
+
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid black;
+            min-width: 120px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .menu-dropdown button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .menu-dropdown button:hover {
+            background: #f0f0f0;
+        }
+
+        .paper {
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid black;
+            width: 8.27in;
+            height: 11.69in;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid black;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        td {
+            pointer-events: none;
+        }
+
+        @media print {
+            .header, .button-container {
+                display: none;
+            }
+        }
+
+        #quizPopup button {
+    background-color: #6C4AB6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#quizPopup button:hover {
+    background-color: #8D72E1;
+}
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-title">
+            <img src="logo.ico" alt="Logo" class="logo">
+            <span class="title">QUIZZLER</span>
+        </div>
+    </div>
+
+    <a href="frontpage.html">
+        <img src="backbtn.png" alt="Back" class="back-btn">
+      </a>
+      
+
+    <div class="button-container">
+        <button id="generateQuizBtn">Generate Quiz</button>
+        <button id="editProjectBtn">Edit</button>
+        <div class="menu-container">
+            <button class="menu-btn" onclick="toggleMenu()">☰</button>
+            <div class="menu-dropdown" id="menuDropdown">
+                <button onclick="exportToPDF()">Export to PDF</button>
+                <button onclick="window.print()">Print</button>
+                <button onclick="shareProject()">Share</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="paper" class="paper">
+        <h2 id="projectTitle" contenteditable="false">Project Details</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Term</th>
+                    <th>Definition</th>
+                </tr>
+            </thead>
+            <tbody id="projectTableBody"></tbody>
+        </table>
+    </div>
+    
+    <div id="quizPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
+        <div style="background:white; padding:30px; border-radius:10px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+            <h2>Choose Quiz Type</h2>
+            <button onclick="generateQuiz('multiple')" style="margin:10px; padding:10px 20px; font-size:16px;">Multiple Choice</button>
+            <button onclick="generateQuiz('identification')" style="margin:10px; padding:10px 20px; font-size:16px;">Identification</button>
+            <br><br>
+            <button onclick="closeQuizPopup()" style="background:#ccc; padding:5px 10px; border:none;">Cancel</button>
+        </div>
+    </div>
+    
+
+    <script>
+
+        function toggleMenu() {
+            let menu = document.getElementById("menuDropdown");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        }
+
+        function exportToPDF() {
+            alert("Exporting to PDF is not implemented yet.");
+        }
+
+        function shareProject() {
+            alert("Sharing functionality is not implemented yet.");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-btn')) {
+                document.getElementById("menuDropdown").style.display = "none";
+            }
+        };
+
+        function loadPrintTitle() {
+            let savedTitle = localStorage.getItem("projectTitle") || "Sample Title";
+            let titleElement = document.getElementById("projectTitle");
+            if (titleElement) {
+                titleElement.textContent = savedTitle;
+            }
+        }
+
+        function loadProject() {
+            let project = JSON.parse(localStorage.getItem("selectedProject"));
+            let titleElement = document.getElementById("projectTitle");
+            let tableBody = document.getElementById("projectTableBody");
+
+            if (project && project.length > 0) {
+                titleElement.textContent = localStorage.getItem("projectTitle") || "Project Details"; 
+                tableBody.innerHTML = "";
+
+                project.forEach(item => {
+                    let row = document.createElement("tr");
+                    row.innerHTML = `<td class="editable" contenteditable="false">${item.term}</td>
+                                     <td class="editable" contenteditable="false">${item.definition}</td>`;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                document.getElementById("paper").innerHTML = "<h2>No project selected.</h2>";
+            }
+        }
+
+        document.getElementById("editProjectBtn").addEventListener("click", function () {
+    // Get terms and definitions from the table
+    let terms = [];
+    let rows = document.querySelectorAll("#projectTableBody tr");
+    rows.forEach(row => {
+        let term = row.cells[0].textContent;
+        let definition = row.cells[1].textContent;
+        terms.push({ term, definition });
+    });
+
+    // Store the terms and project title in localStorage
+    localStorage.setItem("terms", JSON.stringify(terms));
+    localStorage.setItem("projectTitle", document.getElementById("projectTitle").textContent);
+
+    // Redirect to addpage.html
+    window.location.href = "addpage.html?mode=edit";
+});
+document.getElementById("generateQuizBtn").addEventListener("click", function () {
+    document.getElementById("quizPopup").style.display = "flex";
+});
+
+function closeQuizPopup() {
+    document.getElementById("quizPopup").style.display = "none";
+}
+
+function generateQuiz(type) {
+    let terms = [];
+    let rows = document.querySelectorAll("#projectTableBody tr");
+    rows.forEach(row => {
+        let term = row.cells[0].textContent;
+        let definition = row.cells[1].textContent;
+        terms.push({ term, definition });
+    });
+
+    localStorage.setItem("quizData", JSON.stringify(terms));
+
+    if (type === "multiple") {
+        window.location.href = "multiplechoice.html";
+    } else if (type === "identification") {
+        window.location.href = "identification.html";
+    }
+}
+
+
+
+        window.onload = function () {
+            loadPrintTitle();
+            loadProject();
+        };
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quizzler</title>
+  <link rel="icon" type="image/x-icon" href="logo.ico" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial,s ans-serif;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(to right, #8D72E1, #6C4AB6);
+      color: white;
+    }
+
+    .header1 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.625rem 1.25rem;
+      background: linear-gradient(to right, #8D72E1, #6C4AB6);
+      border-bottom: 2px solid white;
+      z-index: 1000;
+    }
+
+    .logo {
+      width: 5rem;
+    }
+
+    .title {
+      font-size: 3vw;
+      font-family: fantasy;
+      color: white;
+      white-space: nowrap;
+    }
+
+    .back-btn {
+      width: 3.125rem;
+      height: auto;
+      cursor: pointer;
+      position: absolute;
+      top: 7.5rem;
+      left: 1.25rem;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-top: 5rem;
+    }
+
+    .title-container {
+      width: 90%;
+      max-width: 62.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2rem;
+      border-radius: 1.25rem;
+      text-align: center;
+      box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.2);
+      margin-bottom: 1.25rem;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 1.875rem;
+      border-radius: 1rem;
+      width: 90%;
+      max-width: 62.5rem;
+      text-align: center;
+      box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.2);
+      margin-bottom: 1.25rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.625rem;
+      margin: 0.625rem 0;
+      border: none;
+      border-radius: 0.5rem;
+      outline: none;
+      background: rgba(255, 255, 255, 0.8);
+      color: black;
+      font-size: 1rem;
+    }
+
+    textarea {
+      resize: none;
+      height: 6.25rem;
+    }
+
+    .btn {
+      background: #4CAF50;
+      color: white;
+      padding: 0.75rem;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: 0.3s;
+      margin-top: 0.625rem;
+    }
+
+    .add-btn {
+      background: #008CBA;
+    }
+
+    .add-btn:hover {
+      background: #0073a5;
+    }
+
+    .grey-container {
+      position: fixed;
+      bottom: -100%;
+      width: 90%;
+      height: 100vh;
+      background: #b7b1f2c7;
+      padding: 1.25rem;
+      border-radius: 1.25rem 1.25rem 0 0;
+      box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.2);
+      transition: bottom 0.4s ease-in-out;
+      overflow-y: auto;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+
+    .toggle-btn {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #B7B1F2;
+      color: white;
+      border: none;
+      padding: 0.625rem;
+      cursor: pointer;
+      border-radius: 0.375rem;
+      font-size: 1.125rem;
+      z-index: 2500;
+    }
+
+    .term-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    .term-table th:nth-child(1),
+    .term-table td:nth-child(1) {
+      width: 25%;
+      word-wrap: break-word;
+      overflow: hidden;
+    }
+
+    .term-table th:nth-child(2),
+    .term-table td:nth-child(2) {
+      width: 75%;
+      word-wrap: break-word;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .term-table th,
+    .term-table td {
+      border: 1px solid black;
+      padding: 0.625rem;
+      text-align: center;
+      background: white;
+      vertical-align: top;
+      color: black;
+    }
+
+    .term-table tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .btn-edit {
+  position: absolute;
+  top: 50%;
+  right: 3%;
+  transform: translateY(-50%);
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.btn-delete {
+  position: absolute;
+  top: 50%;
+  right: 1%;
+  transform: translateY(-50%);
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+
+    .btn-edit img, .btn-delete img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .saved-terms-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      position: relative;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="header1">
+    <img src="logo.ico" alt="Logo" class="logo" />
+    <span class="title">QUIZZLER</span>
+  </div>
+
+  <img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()" />
+
+  <div class="wrapper">
+    <div class="title-container">
+      <h2>TITLE</h2>
+      <input type="text" id="quizTitle" placeholder="Enter Title" />
+    </div>
+
+    <div class="container">
+      <h2>ADD TERM AND DEFINITION</h2>
+      <input type="text" id="termInput" placeholder="Enter Term" />
+      <textarea id="definitionInput" placeholder="Enter Definition"></textarea>
+      <button class="btn add-btn" onclick="addTerm()">Add</button>
+      <button class="btn" id="saveBtn">Save</button>
+    </div>
+
+    <button class="toggle-btn" onclick="toggleContainer()">▲ Show Saved Terms</button>
+
+    <div class="grey-container" id="greyContainer">
+      <br />
+      <div class="saved-terms-header">
+        <h2>SAVED TERMS</h2>
+      </div>
+      <table class="term-table" id="termTable">
+        <tr>
+          <th>Term</th>
+          <th>Definition</th>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function () {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+
+    if (mode !== "edit") {
+        localStorage.removeItem("terms");
+        localStorage.removeItem("projectTitle");
+    }
+
+    let storedTitle = localStorage.getItem("projectTitle");
+    let storedTerms = JSON.parse(localStorage.getItem("terms"));
+
+    document.getElementById("quizTitle").value = storedTitle || "";
+
+    if (storedTerms && storedTerms.length > 0) {
+        const termTable = document.getElementById("termTable");
+        storedTerms.forEach(item => {
+            let row = termTable.insertRow(-1);
+            row.insertCell(0).textContent = item.term;
+            let definitionCell = row.insertCell(1);
+            definitionCell.textContent = item.definition;
+
+            let editBtn = document.createElement("button");
+            editBtn.classList.add("btn-edit");
+            editBtn.innerHTML = `<img src="edit-icon.png" alt="Edit">`;
+            editBtn.onclick = function() { editTerm(row); };
+
+            let deleteBtn = document.createElement("button");
+            deleteBtn.classList.add("btn-delete");
+            deleteBtn.innerHTML = `<img src="delete-icon.png" alt="Delete">`;
+            deleteBtn.onclick = function() { deleteTerm(row); };
+
+            definitionCell.appendChild(editBtn);
+            definitionCell.appendChild(deleteBtn);
+        });
+    }
+
+};
+
+    function goBack() {
+      window.location.href = "frontpage.html";
+    }
+
+    function addTerm() {
+      const termInput = document.getElementById("termInput");
+      const definitionInput = document.getElementById("definitionInput");
+      const termTable = document.getElementById("termTable");
+
+      const term = termInput.value.trim();
+      const definition = definitionInput.value.trim();
+
+      if (term === "" || definition === "") {
+        alert("Please enter both a term and a definition.");
+        return;
+      }
+
+      const row = termTable.insertRow(-1);
+      row.insertCell(0).textContent = term;
+      let definitionCell = row.insertCell(1);
+      definitionCell.textContent = definition;
+
+      let editBtn = document.createElement("button");
+      editBtn.classList.add("btn-edit");
+      editBtn.innerHTML = `<img src="edit.png" alt="Edit">`;
+      editBtn.onclick = function() { editTerm(row); };
+
+      let deleteBtn = document.createElement("button");
+      deleteBtn.classList.add("btn-delete");
+      deleteBtn.innerHTML = `<img src="delete.png" alt="Delete">`;
+      deleteBtn.onclick = function() { deleteTerm(row); };
+
+      definitionCell.appendChild(editBtn);
+      definitionCell.appendChild(deleteBtn);
+
+      termInput.value = "";
+      definitionInput.value = "";
+    }
+
+    function toggleContainer() {
+      const greyContainer = document.getElementById("greyContainer");
+      const toggleButton = document.querySelector(".toggle-btn");
+
+      greyContainer.style.bottom = (greyContainer.style.bottom === "0px") ? "-100%" : "0";
+      toggleButton.textContent = (greyContainer.style.bottom === "0px") ? "▼ Hide Saved Terms" : "▲ Show Saved Terms";
+    }
+
+    function saveProject() {
+      const quizTitle = document.getElementById("quizTitle").value.trim();
+      if (!quizTitle) return alert("Please enter a quiz title.");
+
+      const terms = [...document.querySelectorAll("#termTable tr:not(:first-child)")].map(row => ({
+        term: row.cells[0].textContent,
+        definition: row.cells[1].textContent // Note: This gets the text content INCLUDING any potential button text if innerHTML was modified differently
+      }));
+
+      if (!terms.length) return alert("Please add at least one term and definition.");
+
+      localStorage.setItem("projects", JSON.stringify({ ...JSON.parse(localStorage.getItem("projects") || "{}"), [quizTitle]: terms }));
+      window.location.href = "frontpage.html";
+    }
+
+    document.getElementById("saveBtn").addEventListener("click", saveProject);
+
+    function editTerm(row) {
+      let definitionCell = row.cells[1];
+      definitionCell.setAttribute("contenteditable", "true");
+      // Added focus for better UX
+      definitionCell.focus();
+    }
+
+    function deleteTerm(row) {
+      // Added confirmation dialog
+      if (confirm("Are you sure you want to delete this term?")) {
+         row.remove();
+      }
+    }
+  </script>
+</body>
+</html>
