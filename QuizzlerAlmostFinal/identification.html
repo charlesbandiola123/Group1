@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.ico">
+    <title>Quizzler - Identification</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #8D72E1, #e0b7fc);
+            margin: 0;
+            padding: 0;
+            padding-top: 70px;
+            padding-bottom: 50px;
+        }
+        /* PDF Export Specific Styles */
+/* Ensure printed page margins are controlled */
+@page {
+  margin-top: 0.5in;
+  margin-right: 1in;
+  margin-bottom: 1in;
+  margin-left: 1in;
+}
+
+/* Apply clean layout during PDF export */
+body.pdf-export-active {
+  background: white !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Remove styling and padding from container during export */
+body.pdf-export-active .container {
+  max-width: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  background: white !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Hide buttons and navigation during export */
+body.pdf-export-active .button-group,
+body.pdf-export-active .top-back-btn {
+  display: none !important;
+}
+
+/* Hide any on-screen quiz elements during export */
+body.pdf-export-active #quizContainer .question,
+body.pdf-export-active #quizContainer .answer-line,
+body.pdf-export-active #quizContainer .displayed-answer {
+  display: none !important;
+}
+
+/* Wrapper for PDF content */
+.pdf-exam-container {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: white;
+  color: black;
+}
+
+/* Title styling – make sure it's at the top */
+.pdf-exam-title {
+  text-align: center !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  margin-bottom: 0.5in !important;
+  font-size: 16pt !important;
+  font-weight: bold !important;
+  color: black !important;
+  font-family: 'Times New Roman', Times, serif !important;
+  page-break-after: avoid !important;
+}
+
+/* Each exam question block */
+.pdf-exam-question {
+  margin-bottom: 25px !important;
+  font-family: 'Times New Roman', Times, serif !important;
+  font-size: 12pt !important;
+  line-height: 1.5 !important;
+  color: black !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  page-break-inside: avoid !important;
+}
+
+/* Blank line FIRST before the number */
+.pdf-exam-question-blank {
+  min-width: 100px;
+  border-bottom: 1px solid black;
+  margin-right: 12px; /* space between blank and number */
+  height: 1.2em;
+  flex-shrink: 0;
+}
+
+/* Question number follows the blank */
+.pdf-exam-question-number {
+  min-width: 25px;
+  margin-right: 6px;
+  white-space: nowrap;
+}
+
+/* Then the question text */
+.pdf-exam-question-text {
+  flex: 1;
+}
+
+        /* End PDF Export Specific Styles */
+
+        .top-back-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: auto;
+            cursor: pointer;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s;
+        }
+        .top-back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #6C4AB6;
+            margin-bottom: 30px;
+        }
+        .question {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .question:last-child {
+             border-bottom: none;
+             margin-bottom: 0;
+             padding-bottom: 0;
+        }
+        .question h3 {
+            margin: 0 0 15px;
+            font-weight: normal;
+            color: #333;
+        }
+         .question h3 strong {
+            font-weight: bold;
+            color: #555;
+         }
+        .answer-line {
+            border-bottom: 1px solid #999;
+            height: 25px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        .displayed-answer {
+            font-style: italic;
+            color: #007bff;
+            padding-left: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 800px;
+            margin: 20px auto 30px auto;
+            padding: 0 15px;
+            box-sizing: border-box;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .present-btn, .save-btn, .export-btn { /* Added .export-btn here */
+            display: inline-block;
+            padding: 10px 18px;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.3s, box-shadow 0.2s;
+            text-align: center;
+        }
+        .present-btn {
+             background-color: #007bff;
+        }
+        .present-btn:hover {
+             background-color: #0056b3;
+             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .save-btn {
+            background-color: #28a745;
+        }
+        .save-btn:hover {
+            background-color: #218838;
+             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .export-btn { background-color: #ffc107; } /* Style for export button */
+        .export-btn:hover { background-color: #e0a800; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        .message {
+             text-align: center;
+             padding: 15px;
+             margin-top: 20px;
+             border-radius: 8px;
+             font-weight: bold;
+        }
+        .message.error {
+             background-color: #f8d7da;
+             color: #721c24;
+             border: 1px solid #f5c6cb;
+        }
+         .message.info {
+             background-color: #d1ecf1;
+             color: #0c5460;
+             border: 1px solid #bee5eb;
+        }
+        @media print { /* Styles for actual browser print */
+          .top-back-btn, .button-group { display: none !important; }
+          .container {
+            box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important;
+            width: 100% !important; max-width: 100% !important;
+          }
+          body {
+            background: white !important;
+            padding-top: 10px !important; /* Minimal padding for print */
+          }
+          .answer-line, .displayed-answer { display: none !important; } /* Hide answers for print */
+          .question h3 strong { color: black !important; }
+          .question { border-bottom: 1px dotted #ccc !important; }
+          .question:last-child { border-bottom: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <img src="backbtn.png" alt="Back" class="top-back-btn" id="topBackBtn">
+
+    <div class="container">
+        <h1 id="quizTitle">Identification Quiz</h1>
+        <div id="quizContainer">
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="present-btn" id="presentBtn" disabled>Present</button>
+        <button class="export-btn" id="exportPdfBtn" disabled>Export to PDF</button> <!-- Added Export Button -->
+        <button class="save-btn" id="saveBtn" disabled>Save Quiz</button>
+    </div>
+
+    <script>
+        let generatedQuizQuestions = [];
+        let currentQuizTitle = "Untitled Quiz";
+
+        function initializeIdentificationQuizView() {
+            const quizContainer = document.getElementById("quizContainer");
+            const titleElement = document.getElementById("quizTitle");
+            const saveBtn = document.getElementById("saveBtn");
+            const presentBtn = document.getElementById("presentBtn");
+            const exportPdfBtn = document.getElementById("exportPdfBtn"); // Get export button
+            const topBackBtn = document.getElementById("topBackBtn");
+
+            quizContainer.innerHTML = "";
+            generatedQuizQuestions = [];
+
+            presentBtn.disabled = true;
+            exportPdfBtn.disabled = true; // Disable export button initially
+            saveBtn.style.display = 'none';
+            saveBtn.disabled = true;
+
+            const selectedQuizRaw = localStorage.getItem("selectedQuiz");
+
+            if (selectedQuizRaw) {
+                console.log("Loading an already saved Identification quiz.");
+                topBackBtn.onclick = function() { window.location.href = "frontpage.html"; };
+
+                try {
+                    const savedQuizData = JSON.parse(selectedQuizRaw);
+                    if (!savedQuizData || !savedQuizData.title || !savedQuizData.questions || !Array.isArray(savedQuizData.questions) || savedQuizData.type !== "identification") {
+                        throw new Error("Invalid saved identification quiz data structure or type.");
+                    }
+
+                    currentQuizTitle = savedQuizData.title;
+                    titleElement.textContent = currentQuizTitle;
+                    document.title = `Quizzler - ${currentQuizTitle}`;
+
+                    savedQuizData.questions.forEach((q, index) => {
+                        if (!q || typeof q.definition === 'undefined' || typeof q.term === 'undefined') {
+                             console.warn("Skipping invalid question in saved identification quiz data:", q); return;
+                        }
+                        const questionDiv = document.createElement("div");
+                        questionDiv.className = "question";
+                        questionDiv.innerHTML = `
+                            <h3>${index + 1}. <strong>${q.definition}</strong>?</h3>
+                            <div class="answer-line"></div>
+                            <div class="displayed-answer">${q.term}</div>
+                            <div class="answer-line"></div>
+                        `;
+                        quizContainer.appendChild(questionDiv);
+                        generatedQuizQuestions.push({ id: index + 1, definition: q.definition, term: q.term });
+                    });
+
+                    if (generatedQuizQuestions.length > 0) {
+                        presentBtn.disabled = false;
+                        exportPdfBtn.disabled = false; // Enable export button
+                    } else {
+                        displayMessage("This saved quiz has no valid questions to display.", "info");
+                    }
+
+                } catch (e) {
+                    console.error("Error loading saved identification quiz:", e);
+                    displayMessage("Error: Could not load the selected quiz.", "error");
+                    titleElement.textContent = "Error Loading Quiz";
+                    document.title = "Quizzler - Error";
+                }
+                localStorage.removeItem("selectedQuiz");
+
+            } else {
+                console.log("Generating a new Identification quiz. Save button will be available.");
+                saveBtn.style.display = '';
+                topBackBtn.onclick = function() { window.location.href = "print.html"; };
+
+                const quizDataRaw = localStorage.getItem("quizData");
+                const projectTitleFromStorage = localStorage.getItem("projectTitle") || "Untitled Project";
+
+                currentQuizTitle = projectTitleFromStorage;
+                titleElement.textContent = currentQuizTitle;
+                document.title = `Quizzler - New Identification Quiz from ${currentQuizTitle}`;
+
+                if (!quizDataRaw) { displayMessage("Error: No quiz data found from previous page.", "error"); return; }
+
+                let quizTerms;
+                try {
+                     quizTerms = JSON.parse(quizDataRaw);
+                     if (!Array.isArray(quizTerms)) throw new Error("Data is not in array format.");
+                } catch (e) {
+                     console.error("Error parsing data for new quiz generation:", e);
+                     displayMessage("Error: Could not read quiz data.", "error"); return;
+                }
+
+                if (quizTerms.length === 0) { displayMessage("No questions were selected for this quiz.", "info"); return; }
+
+                quizTerms.forEach((item, index) => {
+                     if (!item || typeof item.term === 'undefined' || typeof item.definition === 'undefined') {
+                         console.warn("Skipping invalid item in quiz data:", item); return;
+                     }
+                    const questionDiv = document.createElement("div");
+                    questionDiv.className = "question";
+                    questionDiv.innerHTML = `
+                        <h3>${index + 1}. <strong>${item.definition}</strong>?</h3>
+                        <div class="answer-line"></div>
+                        <div class="displayed-answer">${item.term}</div>
+                        <div class="answer-line"></div>
+                    `;
+                    quizContainer.appendChild(questionDiv);
+                    generatedQuizQuestions.push({ id: index + 1, definition: item.definition, term: item.term });
+                });
+
+                if (generatedQuizQuestions.length > 0) {
+                    presentBtn.disabled = false;
+                    saveBtn.disabled = false;
+                    exportPdfBtn.disabled = false; // Enable export button
+                } else {
+                    saveBtn.disabled = true;
+                    presentBtn.disabled = true;
+                    exportPdfBtn.disabled = true; // Keep export button disabled
+                    if(quizTerms.length > 0 && !document.querySelector('.message')) {
+                        displayMessage("Could not generate any valid questions from the selected terms.", "info");
+                    }
+                }
+            }
+
+            if (generatedQuizQuestions.length > 0) {
+                localStorage.setItem("formattedQuizForPresentation", JSON.stringify(generatedQuizQuestions));
+            }
+        }
+
+        function saveQuiz() {
+            if (generatedQuizQuestions.length === 0) {
+                 alert("No questions were generated to save."); return;
+            }
+            const projectTitleForSaving = localStorage.getItem("projectTitle") || currentQuizTitle.replace(" - Identification", "") || "Untitled Project"; // Use currentQuizTitle as fallback
+            const quizDataToSave = {
+                title: `${projectTitleForSaving} - Identification`,
+                type: "identification",
+                questions: generatedQuizQuestions.map(q => ({ definition: q.definition, term: q.term }))
+            };
+
+            let savedQuizzes = [];
+            try {
+                savedQuizzes = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
+                 if (!Array.isArray(savedQuizzes)) savedQuizzes = [];
+            } catch (e) {
+                 console.error("Error reading saved quizzes:", e); savedQuizzes = [];
+            }
+
+            savedQuizzes.push(quizDataToSave);
+            localStorage.setItem("savedQuizzes", JSON.stringify(savedQuizzes));
+            alert(`Quiz "${quizDataToSave.title}" saved! You can view it on the main page.`);
+
+            document.getElementById("saveBtn").style.display = 'none';
+            document.getElementById("saveBtn").disabled = true;
+        }
+
+        function openPresentMode() {
+             if (generatedQuizQuestions.length === 0) {
+                 alert("No quiz generated/loaded to present."); return;
+             }
+             window.open('presenti.html', '_blank');
+        }
+
+        function displayMessage(text, type = "info") {
+             const quizContainer = document.getElementById("quizContainer");
+             quizContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
+             const saveBtn = document.getElementById("saveBtn");
+             saveBtn.style.display = 'none';
+             saveBtn.disabled = true;
+             document.getElementById("presentBtn").disabled = true;
+             document.getElementById("exportPdfBtn").disabled = true; // Disable export on message display
+        }
+
+        function exportToPDF() {
+            if (generatedQuizQuestions.length === 0) {
+                alert("No questions to export.");
+                return;
+            }
+            const title = currentQuizTitle;
+            const questions = generatedQuizQuestions;
+
+            const pdfContentContainer = document.createElement("div");
+            // pdfContentContainer.classList.add("pdf-container"); // Optional class if needed for specific targeting
+
+            const titleEl = document.createElement("div");
+            titleEl.className = "pdf-exam-title";
+            titleEl.textContent = title;
+            pdfContentContainer.appendChild(titleEl);
+
+            questions.forEach((q, idx) => {
+                const questionEl = document.createElement("div");
+                questionEl.className = "pdf-exam-question";
+                // Note: No question mark after q.definition here, as your original code had it inside <h3>
+                // If definition doesn't end with '?', you might want to add it.
+                questionEl.innerHTML = `
+                <span class="pdf-exam-question-blank"></span>
+                  <span class="pdf-exam-question-number">${idx + 1}.</span>
+                  <span class="pdf-exam-question-text">${q.definition}</span>
+                `;
+                pdfContentContainer.appendChild(questionEl);
+            });
+
+            document.body.classList.add("pdf-export-active");
+            // Append the dynamically created container to the body for html2pdf to process
+            document.body.appendChild(pdfContentContainer);
+
+            const opt = {
+                margin: [0.75, 0.75, 0.75, 0.75], // top, left, bottom, right (in inches)
+                filename: `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_identification_quiz.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true }, // useCORS might be needed for external images if any
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(pdfContentContainer).save().then(() => {
+                document.body.removeChild(pdfContentContainer); // Clean up the temporary container
+                document.body.classList.remove("pdf-export-active");
+            }).catch(err => {
+                console.error("Error exporting to PDF:", err);
+                document.body.removeChild(pdfContentContainer); // Ensure cleanup on error too
+                document.body.classList.remove("pdf-export-active");
+                alert("An error occurred while exporting to PDF. Please try again.");
+            });
+        }
+
+        document.getElementById('saveBtn').addEventListener('click', saveQuiz);
+        document.getElementById('presentBtn').addEventListener('click', openPresentMode);
+        document.getElementById('exportPdfBtn').addEventListener('click', exportToPDF); // Listener for export
+        window.addEventListener('load', initializeIdentificationQuizView);
+
+    </script>
+    </body>
+</html>
