@@ -48,26 +48,80 @@
     .button-container {
       display: flex;
       gap: 10px;
-      align-items: center; /* Added for better vertical alignment */
+      align-items: center;
     }
 
-    button, .button-container a.button-link { /* Combined styling for buttons and links as buttons */
+    button, .button-container a.button-link {
       padding: 5px 10px;
       border: 2px solid white;
       cursor: pointer;
       border-radius: 50px;
       background-color: #ffffff;
       color: black;
-      text-decoration: none; /* For <a> tags */
-      font-family: Arial, sans-serif; /* Ensure consistent font */
-      font-size: inherit; /* Ensure consistent font size */
-      display: inline-block; /* For <a> tags */
+      text-decoration: none;
+      font-family: Arial, sans-serif;
+      font-size: inherit;
+      display: inline-block;
     }
     .button-container span.welcome-message {
         color: white;
         margin-right: 15px;
         font-size: 16px;
     }
+
+    /* Styles for the new burger menu */
+    .burger-menu-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .burger-toggle-btn {
+      padding: 5px 10px; /* Match other buttons */
+      border: 2px solid white;
+      cursor: pointer;
+      border-radius: 50px;
+      background-color: #ffffff;
+      color: black;
+      font-size: 18px; /* Adjust for burger icon size */
+      line-height: 1; /* Ensure icon is centered */
+    }
+    .burger-toggle-btn:hover {
+      background-color: #f0f0f0;
+    }
+
+    .dropdown-content-burger {
+      display: none; /* Hidden by default */
+      position: absolute;
+      right: 0; /* Align to the right of the button */
+      top: 100%; /* Position below the button */
+      background-color: white;
+      min-width: 120px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1000; /* Ensure it's on top */
+      border-radius: 8px;
+      margin-top: 5px; /* Small gap */
+    }
+
+    .dropdown-content-burger button {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      border-radius: 0; /* Reset border-radius for items unless on hover */
+    }
+
+    .dropdown-content-burger button:hover {
+      background-color: #f1f1f1;
+      border-radius: 8px; /* Match dropdown's border-radius on hover */
+    }
+
 
     .create {
       border-radius: 50px;
@@ -134,6 +188,7 @@
     .menu-container button {
       padding: 10px 20px;
       border: none;
+      border-radius: 0; /* Reset from general button style */
       background: white;
       cursor: pointer;
       font-size: 16px;
@@ -171,13 +226,13 @@
       padding: 5px 10px;
       border-radius: 30px;
       border: none;
-      background-color: #e74d3c00; /* Transparent background */
-      color: #333; /* Darker color for visibility */
+      background-color: #e74d3c00;
+      color: #333;
       font-size: 18px;
       cursor: pointer;
     }
     .delete-btn:hover {
-      background-color: rgba(0,0,0,0.05); /* Subtle hover effect */
+      background-color: rgba(0,0,0,0.05);
     }
 
     @media (max-width: 600px) {
@@ -189,6 +244,8 @@
 
       .button-container {
         margin-top: 10px;
+        flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+        justify-content: center; /* Center buttons when they wrap */
       }
 
       .title {
@@ -213,6 +270,13 @@
     <div class="button-container" id="auth-buttons-default">
       <button class="signup">Sign Up</button>
       <button class="login">Log In</button>
+      <!-- Burger Menu for Tutorial -->
+      <div class="burger-menu-wrapper">
+        <button id="burger-menu-toggle" class="burger-toggle-btn" aria-label="Open Menu">☰</button> <!-- Burger icon -->
+        <div id="tutorial-dropdown-menu" class="dropdown-content-burger">
+          <button id="tutorial-action-button">Tutorial?</button>
+        </div>
+      </div>
     </div>
     <!-- Container for Logged-In state (initially hidden) -->
     <div class="button-container" id="auth-buttons-loggedin" style="display:none;">
@@ -251,129 +315,52 @@
         return null;
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const defaultAuthContainer = document.getElementById('auth-buttons-default');
-      const loggedInAuthContainer = document.getElementById('auth-buttons-loggedin');
-      const welcomeUserMessage = document.getElementById('welcome-user-message');
-      const logoutActionLink = document.getElementById('logout-action-link');
+    // Function to load saved projects
+    function loadSavedProjects() {
+        let projects = JSON.parse(localStorage.getItem("projects")) || {};
+        let displayContainer = document.getElementById("termsBox");
 
-      const isLoggedIn = getCookie("isLoggedIn") === "true";
-      const username = getCookie("username"); // Get username from cookie
-
-      if (isLoggedIn) {
-          defaultAuthContainer.style.display = 'none';
-          loggedInAuthContainer.style.display = 'flex';
-          if (username) {
-              welcomeUserMessage.textContent = 'Welcome, ' + username + '!';
-          } else {
-              welcomeUserMessage.textContent = 'Welcome!'; // Fallback
-          }
-          logoutActionLink.addEventListener('click', function(e) {
-              e.preventDefault();
-              // Redirect to logout.php to clear session AND cookies
-              window.location.href = 'logout.php';
-          });
-      } else {
-          defaultAuthContainer.style.display = 'flex';
-          loggedInAuthContainer.style.display = 'none';
-
-          const signupButton = defaultAuthContainer.querySelector(".signup");
-          if (signupButton) {
-              signupButton.addEventListener("click", function () {
-                window.location.href = "signup.php";
-              });
-          }
-
-          const loginButton = defaultAuthContainer.querySelector(".login");
-          if (loginButton) {
-              loginButton.addEventListener("click", function () {
-                window.location.href = "login.php";
-              });
-          }
-      }
-
-      // --- Your existing JavaScript for dropdowns, projects, quizzes ---
-      const dropdownToggle = document.getElementById("viewToggleBtn");
-      const dropdownMenu = document.getElementById("toggleMenu");
-      const termsBox = document.getElementById("termsBox");
-      const quizzesBox = document.getElementById("quizzesBox");
-
-      if (dropdownToggle && dropdownMenu && termsBox && quizzesBox) {
-          dropdownToggle.addEventListener("click", () => {
-            dropdownMenu.style.display = dropdownMenu.style.display === "flex" ? "none" : "flex";
-          });
-
-          dropdownMenu.addEventListener("click", function (e) {
-            if (e.target.tagName === "BUTTON") {
-              const view = e.target.getAttribute("data-view");
-              if (view === "project") {
-                termsBox.style.display = "flex";
-                quizzesBox.style.display = "none";
-                dropdownToggle.textContent = "My Project ▼";
-              } else if (view === "quiz") {
-                termsBox.style.display = "none";
-                quizzesBox.style.display = "flex";
-                dropdownToggle.textContent = "My Quizzes ▼";
-              }
-              dropdownMenu.style.display = "none";
-            }
-          });
-          document.addEventListener('click', function(event) {
-            if (dropdownMenu.style.display === 'flex' && !dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                dropdownMenu.style.display = 'none';
-            }
-          });
-      } else {
-          console.warn("Dropdown toggle or menu elements not found. Dropdown functionality may be affected.");
-      }
-    });
-
-    window.onload = function () {
-      // Your existing localStorage project/quiz loading logic can remain the same.
-      let projects = JSON.parse(localStorage.getItem("projects")) || {};
-      let displayContainer = document.getElementById("termsBox");
-
-      if (!displayContainer) {
-          console.error("Element with ID 'termsBox' not found for displaying projects.");
-      } else {
-          displayContainer.innerHTML = "";
-          if (Object.keys(projects).length > 0) {
+        if (!displayContainer) {
+            console.error("Element with ID 'termsBox' not found for displaying projects.");
+            return;
+        }
+        displayContainer.innerHTML = ""; // Clear previous content
+        if (Object.keys(projects).length > 0) {
             Object.keys(projects).forEach((title) => {
-              let projectBox = document.createElement("div");
-              projectBox.classList.add("project-box");
+                let projectBox = document.createElement("div");
+                projectBox.classList.add("project-box");
 
-              const deleteBtn = document.createElement("button");
-              deleteBtn.classList.add("delete-btn");
-              deleteBtn.innerHTML = "🗑️";
-              deleteBtn.addEventListener("click", function (e) {
-                e.stopPropagation();
-                if (confirm("Are you sure you want to delete this project?")) {
-                    delete projects[title];
-                    localStorage.setItem("projects", JSON.stringify(projects));
-                    projectBox.remove();
-                    if (Object.keys(projects).length === 0) {
-                        displayContainer.innerHTML = "<p>No saved projects yet.</p>";
+                const deleteBtn = document.createElement("button");
+                deleteBtn.classList.add("delete-btn");
+                deleteBtn.innerHTML = "🗑️";
+                deleteBtn.addEventListener("click", function (e) {
+                    e.stopPropagation(); // Prevent triggering projectBox click
+                    if (confirm("Are you sure you want to delete this project?")) {
+                        delete projects[title];
+                        localStorage.setItem("projects", JSON.stringify(projects));
+                        projectBox.remove(); // Remove the element from DOM
+                        if (Object.keys(projects).length === 0) {
+                            displayContainer.innerHTML = "<p>No saved projects yet.</p>";
+                        }
                     }
-                }
-              });
+                });
 
-              projectBox.innerHTML = `<h3>${title}</h3>`;
-              projectBox.appendChild(deleteBtn);
+                projectBox.innerHTML = `<h3>${title}</h3>`;
+                projectBox.appendChild(deleteBtn);
 
-              projectBox.addEventListener("click", function () {
-                localStorage.setItem("selectedProject", JSON.stringify(projects[title]));
-                localStorage.setItem("projectTitle", title);
-                window.location.href = "print.html";
-              });
-              displayContainer.appendChild(projectBox);
+                projectBox.addEventListener("click", function () {
+                    localStorage.setItem("selectedProject", JSON.stringify(projects[title]));
+                    localStorage.setItem("projectTitle", title);
+                    window.location.href = "print.html";
+                });
+                displayContainer.appendChild(projectBox);
             });
-          } else {
+        } else {
             displayContainer.innerHTML = "<p>No saved projects yet.</p>";
-          }
-      }
-      loadSavedQuizzes();
-    };
+        }
+    }
 
+    // Function to load saved quizzes
     function loadSavedQuizzes() {
       const quizzes = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
       const quizzesBox = document.getElementById("quizzesBox");
@@ -382,7 +369,7 @@
           console.error("Element with ID 'quizzesBox' not found for displaying quizzes.");
           return;
       }
-      quizzesBox.innerHTML = "";
+      quizzesBox.innerHTML = ""; // Clear previous content
       if (quizzes.length > 0) {
         quizzes.forEach((quiz, index) => {
           const quizBox = document.createElement("div");
@@ -392,11 +379,11 @@
           deleteBtn.classList.add("delete-btn");
           deleteBtn.innerHTML = "🗑️";
           deleteBtn.addEventListener("click", function (e) {
-            e.stopPropagation();
+            e.stopPropagation(); // Prevent triggering quizBox click
             if (confirm("Are you sure you want to delete this quiz?")) {
-                quizzes.splice(index, 1);
+                quizzes.splice(index, 1); // Remove quiz from array
                 localStorage.setItem("savedQuizzes", JSON.stringify(quizzes));
-                quizBox.remove();
+                quizBox.remove(); // Remove the element from DOM
                 if (quizzes.length === 0) {
                     quizzesBox.innerHTML = "<p>No saved quizzes yet.</p>";
                 }
@@ -420,6 +407,121 @@
         quizzesBox.innerHTML = "<p>No saved quizzes yet.</p>";
       }
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // REMOVED: Initial Tutorial Prompt block
+
+      // Auth buttons and user state logic
+      const defaultAuthContainer = document.getElementById('auth-buttons-default');
+      const loggedInAuthContainer = document.getElementById('auth-buttons-loggedin');
+      const welcomeUserMessage = document.getElementById('welcome-user-message');
+      const logoutActionLink = document.getElementById('logout-action-link');
+
+      const isLoggedIn = getCookie("isLoggedIn") === "true";
+      const username = getCookie("username");
+
+      if (isLoggedIn) {
+          defaultAuthContainer.style.display = 'none';
+          loggedInAuthContainer.style.display = 'flex';
+          if (username) {
+              welcomeUserMessage.textContent = 'Welcome, ' + username + '!';
+          } else {
+              welcomeUserMessage.textContent = 'Welcome!';
+          }
+          logoutActionLink.addEventListener('click', function(e) {
+              e.preventDefault();
+              window.location.href = 'logout.php';
+          });
+      } else {
+          defaultAuthContainer.style.display = 'flex';
+          loggedInAuthContainer.style.display = 'none';
+
+          const signupButton = defaultAuthContainer.querySelector(".signup");
+          if (signupButton) {
+              signupButton.addEventListener("click", function () {
+                window.location.href = "signup.html";
+              });
+          }
+
+          const loginButton = defaultAuthContainer.querySelector(".login");
+          if (loginButton) {
+              loginButton.addEventListener("click", function () {
+                window.location.href = "login.html";
+              });
+          }
+
+          // Burger Menu (Tutorial) Logic - only for logged-out state
+          const burgerMenuToggle = document.getElementById('burger-menu-toggle');
+          const tutorialDropdownMenu = document.getElementById('tutorial-dropdown-menu');
+          const tutorialActionButton = document.getElementById('tutorial-action-button');
+
+          if (burgerMenuToggle && tutorialDropdownMenu && tutorialActionButton) {
+              burgerMenuToggle.addEventListener('click', function(event) {
+                  event.stopPropagation();
+                  const isDisplayed = tutorialDropdownMenu.style.display === 'block';
+                  tutorialDropdownMenu.style.display = isDisplayed ? 'none' : 'block';
+              });
+
+              tutorialActionButton.addEventListener('click', function() {
+                  window.location.href = 'tutorial.html';
+              });
+
+              // Close tutorial dropdown if clicked outside
+              document.addEventListener('click', function(event) {
+                  if (tutorialDropdownMenu.style.display === 'block' &&
+                      !burgerMenuToggle.contains(event.target) &&
+                      !tutorialDropdownMenu.contains(event.target)) {
+                      tutorialDropdownMenu.style.display = 'none';
+                  }
+              });
+          } else {
+              console.warn("Burger menu elements (tutorial) not found.");
+          }
+      }
+
+      // "My Project" / "My Quizzes" Dropdown Logic
+      const dropdownToggle = document.getElementById("viewToggleBtn");
+      const dropdownMenu = document.getElementById("toggleMenu");
+      const termsBox = document.getElementById("termsBox");
+      const quizzesBox = document.getElementById("quizzesBox");
+
+      if (dropdownToggle && dropdownMenu && termsBox && quizzesBox) {
+          dropdownToggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            dropdownMenu.style.display = dropdownMenu.style.display === "flex" ? "none" : "flex";
+          });
+
+          dropdownMenu.addEventListener("click", function (e) {
+            if (e.target.tagName === "BUTTON") {
+              const view = e.target.getAttribute("data-view");
+              if (view === "project") {
+                termsBox.style.display = "flex";
+                quizzesBox.style.display = "none";
+                dropdownToggle.textContent = "My Project ▼";
+              } else if (view === "quiz") {
+                termsBox.style.display = "none";
+                quizzesBox.style.display = "flex";
+                dropdownToggle.textContent = "My Quizzes ▼";
+              }
+              dropdownMenu.style.display = "none"; // Close menu after selection
+            }
+          });
+          // Close "My Project" dropdown if clicked outside
+          document.addEventListener('click', function(event) {
+            if (dropdownMenu.style.display === 'flex' &&
+                !dropdownToggle.contains(event.target) &&
+                !dropdownMenu.contains(event.target)) {
+                dropdownMenu.style.display = 'none';
+            }
+          });
+      } else {
+          console.warn("Dropdown toggle or menu elements for Project/Quiz view not found.");
+      }
+
+      // Load saved projects and quizzes from localStorage
+      loadSavedProjects();
+      loadSavedQuizzes();
+    });
   </script>
 </body>
 </html>
