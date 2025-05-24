@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* ... YOUR EXISTING SIGN UP CSS ... */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(to right, #8D72E1, #e0b7fc);
+            font-family: Arial, sans-serif;
+            color: #333; /* Default text color for better readability */
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 40px; /* Slightly more padding */
+            background: linear-gradient(to right, #8D72E1, #6C4AB6);
+            border-bottom: 2px solid white;
+            color: white; /* Text color for header content */
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Slightly more gap */
+        }
+
+        .logo {
+            width: 70px;
+            height: auto;
+        }
+
+        .title {
+            font-size: 40px;
+            font-family: fantasy;
+            white-space: nowrap;
+        }
+
+        .main-content { /* Wrapper for the form container */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers the .container horizontally */
+            padding: 20px; /* Padding around the container, useful on smaller screens */
+            min-height: calc(100vh - 100px); /* Adjust 100px based on actual header height */
+        }
+
+        .container { /* This class is now on the form element */
+            background: white;
+            padding: 30px 35px;
+            width: 100%;
+            max-width: 480px;
+            margin-top: 50px; /* Space from header or top of page */
+            margin-bottom: 50px; /* Space at the bottom */
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: left; /* Align form content to the left */
+        }
+    .back-btn {
+      width: 3.125rem;
+      height: auto;
+      cursor: pointer;
+      position: absolute;
+      top: 7.5rem;
+      left: 1.25rem;
+    }
+        .container h1 {
+            font-size: 32px;
+            color: #8D72E1;
+            margin-bottom: 25px;
+            text-align: center; /* Center the heading itself */
+        }
+
+        .form-group {
+            margin-bottom: 20px; /* Space between each form group (label + input) */
+        }
+
+        .form-group label {
+            display: block; /* Label takes full width, sits above input */
+            font-weight: bold;
+            margin-bottom: 8px; /* Space between label and its input */
+            color: #555;
+            font-size: 16px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%; /* Input takes full width of its parent .form-group */
+            padding: 12px 15px; /* Comfortable internal padding */
+            border: 2px solid #DDD; /* Softer default border */
+            border-radius: 25px; /* Consistent rounded corners */
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #8D72E1; /* Highlight color matching theme */
+            box-shadow: 0 0 0 2px rgba(141, 114, 225, 0.2); /* Subtle focus glow */
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between; /* Distributes space between buttons */
+            gap: 15px; /* Space between the buttons themselves */
+            margin-top: 30px; /* Space above the button group */
+        }
+
+        .button-group button {
+            flex-grow: 1; /* Allows buttons to grow and share space equally */
+            padding: 12px 15px;
+            border-radius: 25px;
+            border: none;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .button-group button:active {
+            transform: translateY(1px); /* Simple press effect */
+        }
+
+        .signupbtn {
+            background-color: #8D72E1;
+            color: white;
+        }
+
+        .signupbtn:hover {
+            background-color: #6C4AB6; /* Darker shade on hover */
+        }
+
+        .cancelbtn {
+            background-color: #f0f0f0;
+            color: #555;
+            border: 1px solid #ccc; /* Giving cancel a border to differentiate */
+        }
+
+        .cancelbtn:hover {
+            background-color: #e0e0e0;
+        }
+
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 15px;
+            min-height: 22px; /* Reserve space for messages to prevent layout jump */
+        }
+        #message p {
+            margin: 0;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 20px;
+            }
+            .title {
+                font-size: 30px;
+            }
+            .logo {
+                width: 60px;
+            }
+            .main-content {
+                 min-height: calc(100vh - 80px); /* Adjust based on responsive header height */
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 20px;
+                margin-top: 30px;
+                margin-bottom: 30px;
+            }
+
+            .container h1 {
+                font-size: 28px;
+            }
+
+            .form-group label {
+                font-size: 15px;
+            }
+            
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            .button-group button {
+                font-size: 15px;
+                padding: 11px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="logo.ico" alt="Logo" class="logo" />
+            <span class="title">QUIZZLER</span>
+        </div>
+    </div>
+  <img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()" />
+    <div class="main-content">
+        <form id="signup-form" class="container">
+            <h1>Sign Up</h1>
+
+            <div class="form-group">
+                <label for="fullname">Full Name</label>
+                <input type="text" placeholder="Enter Full Name" id="fullname" name="fullname" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" placeholder="Enter Email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" placeholder="Enter Password" id="password" name="password" required>
+            </div>
+
+            <div class="button-group">
+                <!-- MODIFIED ONCLICK -->
+                <button type="button" class="cancelbtn" onclick="clearSignupForm()">Cancel</button>
+                <button type="submit" class="signupbtn">Sign Up</button>
+            </div>
+            <div id="message"></div>
+        </form>
+    </div>
+
+    <script>
+        function goBack() {
+  window.history.back();
+}
+        // NEW FUNCTION TO CLEAR THE SIGNUP FORM
+        function clearSignupForm() {
+            document.getElementById("signup-form").reset(); // Resets the form to its initial state
+
+            // Clear any existing messages in the #message div
+            const messageDiv = document.getElementById("message");
+            if (messageDiv) {
+                messageDiv.innerHTML = "";
+            }
+            // Optionally, you can re-focus the first field:
+            // document.getElementById("fullname").focus();
+        }
+
+        $(document).ready(function() {
+            $("#signup-form").submit(function(event) {
+                event.preventDefault();
+
+                var fullname = $("#fullname").val().trim();
+                var email = $("#email").val().trim();
+                var password = $("#password").val();
+
+                if (!fullname || !email || !password) {
+                    $("#message").html("<p style='color: red;'>All fields are required.</p>");
+                    return;
+                }
+                if (!/^\S+@\S+\.\S+$/.test(email)) {
+                    $("#message").html("<p style='color: red;'>Please enter a valid email address.</p>");
+                    return;
+                }
+
+                localStorage.setItem("userEmail", email);
+                // localStorage.setItem("userPassword", password); // Still a security risk
+
+                $.ajax({
+                    type: "POST",
+                    url: "signup.php",
+                    data: {
+                        fullname: fullname,
+                        email: email,
+                        password: password
+                    },
+                    dataType: 'json',
+                    success: function(result) {
+                        if (result.success) {
+                            window.location.href = "success.php?message=" + encodeURIComponent(result.message);
+                        } else {
+                            $("#message").html("<p style='color: red;'>" + $("<div/>").text(result.message).html() + "</p>");
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var errorMessage = "An error occurred. Please try again later.";
+                        if (jqXHR.responseText) {
+                            try {
+                                var response = JSON.parse(jqXHR.responseText);
+                                if (response && response.message) {
+                                    errorMessage = response.message;
+                                }
+                            } catch (e) {
+                                // console.error("Could not parse error response:", jqXHR.responseText);
+                            }
+                        }
+                        $("#message").html("<p style='color: red;'>" + $("<div/>").text(errorMessage).html() + " (" + textStatus + ")</p>");
+                        console.error("AJAX Error: ", textStatus, errorThrown, jqXHR.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

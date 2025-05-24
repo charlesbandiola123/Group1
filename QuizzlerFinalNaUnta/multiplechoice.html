@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.ico">
+    <title>Quizzler - Multiple Choice</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #8D72E1, #e0b7fc);
+            margin: 0;
+            padding: 0;
+            padding-top: 70px;
+            padding-bottom: 50px;
+        }
+
+        /* Styles for PDF Export Process */
+        @page {
+    margin: 1in; /* You can customize this */
+}
+
+body.pdf-export-active {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+body.pdf-export-active .container,
+body.pdf-export-active .top-back-btn,
+body.pdf-export-active .button-group {
+    display: none !important;
+}
+
+.pdf-exam-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white;
+    color: black;
+}
+
+/* Make sure this is the first element inside .pdf-exam-container */
+.pdf-exam-title {
+    text-align: center !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    margin-bottom: 0.5in !important;
+    font-size: 16pt !important;
+    font-weight: bold !important;
+    color: black !important;
+    font-family: 'Times New Roman', Times, serif !important;
+    page-break-before: auto !important;
+    page-break-after: avoid !important;
+}
+
+        /* End PDF Specific Styles */
+
+        .top-back-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: auto;
+            cursor: pointer;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s;
+        }
+        .top-back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #6C4AB6;
+            margin-bottom: 30px;
+        }
+        .question {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        .question:last-child {
+             border-bottom: none;
+             margin-bottom: 0;
+             padding-bottom: 0;
+        }
+        .question h3 {
+            margin: 0 0 15px;
+            font-weight: normal;
+            color: #333;
+            page-break-after: avoid;
+        }
+         .question h3 em {
+            font-style: normal;
+            font-weight: bold;
+            color: #555;
+         }
+        .options {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 10px;
+            margin-bottom: 0;
+            page-break-before: avoid;
+        }
+        .options li {
+            margin-bottom: 8px;
+            background: #f2f4f8;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e4e8;
+            cursor: default;
+            color: #444;
+            page-break-inside: avoid;
+        }
+        ul.options, ul.pdf-exam-options-list {
+  list-style-type: none; /* removes bullets */
+  padding-left: 0; /* optional: remove left padding so the list aligns nicely */
+  margin-left: 0; /* optional: remove margin if needed */
+}
+
+        .options li.correct-answer {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+            font-weight: bold;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 800px;
+            margin: 20px auto 30px auto;
+            padding: 0 15px;
+            box-sizing: border-box;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .present-btn, .save-btn, .export-btn {
+            display: inline-block;
+            padding: 10px 18px;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.3s, box-shadow 0.2s;
+            text-align: center;
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
+        .present-btn { background-color: #007bff; }
+        .present-btn:hover { background-color: #0056b3; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .save-btn { background-color: #28a745; }
+        .save-btn:hover { background-color: #218838; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .export-btn { background-color: #ffc107; }
+        .export-btn:hover { background-color: #e0a800; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .message {
+             text-align: center;
+             padding: 15px;
+             margin-top: 20px;
+             border-radius: 8px;
+             font-weight: bold;
+        }
+        .message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .message.info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+        @media print {
+            html, body {
+                 margin: 0 !important;
+                 padding: 0 !important;
+                 background: white !important;
+                 font-size: 10pt;
+            }
+            body {
+                 padding-top: 0;
+                 padding-bottom: 0;
+                 background: none;
+            }
+            .top-back-btn, .button-group { display: none !important; }
+            .container {
+                box-shadow: none; border-radius: 0; width: auto;
+                max-width: none; padding: 20px !important; margin: 0 !important; border: none;
+            }
+            h1 { font-size: 16pt; color: black; page-break-after: avoid; }
+            .question {
+                 border-bottom: 1px solid #ccc; page-break-inside: avoid;
+                 margin-bottom: 15px; padding-bottom: 10px;
+            }
+            .question:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+            .question h3 { font-size: 11pt; color: black; page-break-after: avoid; margin-bottom: 8px; }
+            .question h3 em { font-weight: bold; font-style: normal; }
+            .options { page-break-before: avoid; margin-top: 5px; }
+            .options li {
+                 font-size: 10pt; padding: 6px 10px; margin-bottom: 4px;
+                 background: #fdfdfd; border: 1px solid #eee; color: black;
+                 page-break-inside: avoid;
+            }
+            .options li.correct-answer {
+                 background: #fdfdfd !important; color: black !important;
+                 border-color: #eee !important; font-weight: normal !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <img src="backbtn.png" alt="Back" class="top-back-btn" id="topBackBtn">
+
+    <div class="container" id="exportableContent">
+        <h1 id="quizTitle"></h1>
+        <div id="quizContainer">
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="present-btn" id="presentBtn" disabled>Present</button>
+        <button class="export-btn" id="exportPdfBtn" disabled>Export to PDF</button>
+        <button class="save-btn" id="saveBtn" disabled>Save Quiz</button>
+    </div>
+
+    <script>
+        let generatedQuizQuestions = [];
+        let currentQuizTitle = "Untitled Quiz";
+        const optionPrefixes = ['A.', 'B.', 'C.', 'D.', 'E.', 'F.'];
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function displayMessage(text, type = "info") {
+             const quizContainer = document.getElementById("quizContainer");
+             quizContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
+             const saveBtn = document.getElementById("saveBtn");
+             saveBtn.style.display = 'none';
+             saveBtn.disabled = true;
+             document.getElementById("presentBtn").disabled = true;
+             document.getElementById("exportPdfBtn").disabled = true;
+        }
+
+        function initializeQuizView() {
+            const quizContainer = document.getElementById("quizContainer");
+            const titleElement = document.getElementById("quizTitle");
+            const saveBtn = document.getElementById("saveBtn");
+            const presentBtn = document.getElementById("presentBtn");
+            const exportBtn = document.getElementById("exportPdfBtn");
+            const topBackBtn = document.getElementById("topBackBtn");
+
+            quizContainer.innerHTML = "";
+            generatedQuizQuestions = [];
+
+            presentBtn.disabled = true;
+            exportBtn.disabled = true;
+            saveBtn.style.display = 'none';
+            saveBtn.disabled = true;
+
+            const selectedQuizRaw = localStorage.getItem("selectedQuiz");
+
+            if (selectedQuizRaw) {
+                console.log("Loading an already saved quiz. Save button will remain hidden.");
+                topBackBtn.onclick = function() { window.location.href = "frontpage.html"; };
+
+                try {
+                    const savedQuizData = JSON.parse(selectedQuizRaw);
+                    if (!savedQuizData || !savedQuizData.title || !savedQuizData.questions || !Array.isArray(savedQuizData.questions)) {
+                        throw new Error("Invalid saved quiz data structure.");
+                    }
+                    currentQuizTitle = savedQuizData.title;
+                    titleElement.textContent = currentQuizTitle;
+                    document.title = `Quizzler - ${currentQuizTitle}`;
+
+                    savedQuizData.questions.forEach((q, index) => {
+                        if (!q || typeof q.definition === 'undefined' || typeof q.term === 'undefined' || !Array.isArray(q.options)) {
+                             console.warn("Skipping invalid question in saved quiz data:", q); return;
+                        }
+                        const questionDiv = document.createElement("div");
+                        questionDiv.className = "question";
+                        const optionsHTML = q.options.map((opt, optIndex) => {
+                            const isCorrect = (opt === q.term);
+                            const tempDiv = document.createElement('div');
+                            tempDiv.textContent = opt || 'Missing Option';
+                            const escapedOptHTML = tempDiv.innerHTML;
+                            return `<li class="${isCorrect ? 'correct-answer' : ''}">${optionPrefixes[optIndex] || ''} ${escapedOptHTML}</li>`;
+                        }).join("");
+
+                        const tempDefDiv = document.createElement('div');
+                        tempDefDiv.textContent = q.definition || 'Missing Definition';
+                        const escapedDefHTML = tempDefDiv.innerHTML;
+
+                        questionDiv.innerHTML = `<h3>${index + 1}. <em>${escapedDefHTML}</em> ?</h3><ul class="options">${optionsHTML}</ul>`;
+                        quizContainer.appendChild(questionDiv);
+                        generatedQuizQuestions.push({ id: index + 1, questionText: q.definition, options: q.options, correctAnswer: q.term });
+                    });
+
+                    if (generatedQuizQuestions.length > 0) {
+                        presentBtn.disabled = false;
+                        exportBtn.disabled = false;
+                    } else {
+                        displayMessage("This saved quiz has no valid questions to display.", "info");
+                    }
+
+                } catch (e) {
+                    console.error("Error loading saved quiz:", e);
+                    displayMessage("Error: Could not load the selected quiz.", "error");
+                    titleElement.textContent = "Error Loading Quiz";
+                    document.title = "Quizzler - Error";
+                }
+                localStorage.removeItem("selectedQuiz");
+
+            } else {
+                console.log("Generating a new quiz from a project. Save button will be available.");
+                saveBtn.style.display = '';
+                topBackBtn.onclick = function() { window.location.href = "print.html"; };
+
+                const quizDataRaw = localStorage.getItem("quizData");
+                const fullProjectRaw = localStorage.getItem("selectedProject");
+                const projectTitleFromStorage = localStorage.getItem("projectTitle") || "Untitled Project";
+
+                currentQuizTitle = projectTitleFromStorage + " - Multiple Choice Quiz";
+                titleElement.textContent = currentQuizTitle;
+                document.title = `Quizzler - New Quiz from ${projectTitleFromStorage}`;
+
+
+                if (!quizDataRaw) { displayMessage("Error: No quiz data found from previous page to generate.", "error"); return; }
+                if (!fullProjectRaw) { displayMessage("Error: Full project data is missing. Cannot generate options.", "error"); return; }
+
+                let quizTerms, fullProjectTerms;
+                try {
+                     quizTerms = JSON.parse(quizDataRaw);
+                     fullProjectTerms = JSON.parse(fullProjectRaw);
+                     if (!Array.isArray(quizTerms) || !Array.isArray(fullProjectTerms)) throw new Error("Data is not array.");
+                } catch (e) {
+                     console.error("Error parsing data for new quiz generation:", e);
+                     displayMessage("Error: Could not read data to generate quiz.", "error"); return;
+                }
+
+                if (quizTerms.length === 0) { displayMessage("No questions were selected for this quiz.", "info"); return; }
+                 if (fullProjectTerms.length < 2 && quizTerms.length > 0 && !document.querySelector('.message.info')) {
+                     displayMessage("Warning: Not enough terms in project for distinct choices. Some options may be 'N/A' or repeated.", "info");
+                 }
+
+
+                quizTerms.forEach((item, index) => {
+                     if (!item || typeof item.term === 'undefined' || typeof item.definition === 'undefined') {
+                         console.warn("Skipping invalid item in quiz data:", item); return;
+                     }
+                    const correctAnswerFromItem = item.term;
+                    let optionsSet = new Set([correctAnswerFromItem]);
+                    const potentialWrongTerms = fullProjectTerms
+                        .filter(projItem => projItem && typeof projItem.term !== 'undefined' && projItem.term !== correctAnswerFromItem)
+                        .map(projItem => projItem.term);
+                    shuffle(potentialWrongTerms);
+
+                    for (const wrongTerm of potentialWrongTerms) {
+                        if (optionsSet.size < 4) {
+                            optionsSet.add(wrongTerm);
+                        } else {
+                            break;
+                        }
+                    }
+                    let optionsArray = Array.from(optionsSet);
+                    while(optionsArray.length < 4 && optionsArray.length < optionPrefixes.length) {
+                        optionsArray.push("N/A");
+                    }
+                    shuffle(optionsArray);
+
+                    const questionDiv = document.createElement("div");
+                    questionDiv.className = "question";
+                    const optionsHTML = optionsArray.map((opt, optIndex) => {
+                        const isCorrect = (opt === correctAnswerFromItem);
+                        const tempDiv = document.createElement('div');
+                        tempDiv.textContent = opt || 'Missing Option';
+                        const escapedOptHTML = tempDiv.innerHTML;
+                        return `<li class="${isCorrect ? 'correct-answer' : ''}">${optionPrefixes[optIndex] || ''} ${escapedOptHTML}</li>`;
+                    }).join("");
+
+                    const tempDefDiv = document.createElement('div');
+                    tempDefDiv.textContent = item.definition || 'Missing Definition';
+                    const escapedDefHTML = tempDefDiv.innerHTML;
+
+                    questionDiv.innerHTML = `<h3>${index + 1}. <em>${escapedDefHTML}</em> ?</h3><ul class="options">${optionsHTML}</ul>`;
+                    quizContainer.appendChild(questionDiv);
+                    generatedQuizQuestions.push({ id: index + 1, questionText: item.definition, options: optionsArray, correctAnswer: correctAnswerFromItem });
+                });
+
+                if (generatedQuizQuestions.length > 0) {
+                    presentBtn.disabled = false;
+                    exportBtn.disabled = false;
+                    saveBtn.disabled = false;
+                } else {
+                    saveBtn.disabled = true;
+                    presentBtn.disabled = true;
+                    exportBtn.disabled = true;
+                    if(quizTerms.length > 0 && !document.querySelector('.message')) {
+                        displayMessage("Could not generate any valid questions from the selected terms.", "info");
+                    }
+                }
+            }
+
+            if (generatedQuizQuestions.length > 0) {
+                localStorage.setItem("formattedQuizForPresentation", JSON.stringify(generatedQuizQuestions));
+            }
+        }
+
+        function saveQuiz() {
+            if (generatedQuizQuestions.length === 0) {
+                 alert("No questions were generated to save.");
+                 return;
+            }
+            const quizTitleForSaving = currentQuizTitle;
+
+            const quizDataToSave = {
+                title: quizTitleForSaving,
+                type: "multiplechoice",
+                questions: generatedQuizQuestions.map(q => ({
+                    definition: q.questionText,
+                    term: q.correctAnswer,
+                    options: q.options
+                }))
+            };
+
+            let savedQuizzes = [];
+            try {
+                savedQuizzes = JSON.parse(localStorage.getItem("savedQuizzes") || "[]");
+                if (!Array.isArray(savedQuizzes)) savedQuizzes = [];
+            } catch (e) {
+                console.error("Error reading saved quizzes:", e); savedQuizzes = [];
+            }
+
+            savedQuizzes.push(quizDataToSave);
+            localStorage.setItem("savedQuizzes", JSON.stringify(savedQuizzes));
+            alert(`Quiz "${quizDataToSave.title}" saved! You can view it on the main page.`);
+
+            document.getElementById("saveBtn").style.display = 'none';
+            document.getElementById("saveBtn").disabled = true;
+            document.getElementById("topBackBtn").onclick = function() { window.location.href = "frontpage.html"; };
+            document.title = `Quizzler - ${quizDataToSave.title}`;
+        }
+
+        function openPresentMode() {
+             if (generatedQuizQuestions.length === 0) {
+                 alert("No quiz generated/loaded to present.");
+                 return;
+             }
+             window.open('presentmq.html', '_blank');
+        }
+
+        function exportToPdf() {
+            const exportButton = document.getElementById("exportPdfBtn");
+            if (generatedQuizQuestions.length === 0) {
+                alert("No questions to export.");
+                return;
+            }
+
+            exportButton.disabled = true;
+            exportButton.textContent = "Exporting...";
+
+            const pdfContentContainer = document.createElement("div");
+            pdfContentContainer.className = "pdf-exam-container";
+
+            const titleEl = document.createElement("div");
+            titleEl.className = "pdf-exam-title";
+            titleEl.textContent = currentQuizTitle; // Title for multiplication quiz
+            pdfContentContainer.appendChild(titleEl);
+
+            generatedQuizQuestions.forEach((q, idx) => {
+                const questionOuterDiv = document.createElement("div");
+                questionOuterDiv.className = "pdf-exam-question";
+
+                const questionTextDiv = document.createElement("div");
+                questionTextDiv.className = "pdf-exam-question-text";
+                questionTextDiv.innerHTML = `${idx + 1}. ${q.questionText || ''} ?`;
+                questionOuterDiv.appendChild(questionTextDiv);
+
+                const optionsListEl = document.createElement("ul");
+                optionsListEl.className = "pdf-exam-options-list";
+
+                q.options.forEach((option, optIdx) => {
+                    const optionItemEl = document.createElement("li");
+                    optionItemEl.className = "pdf-exam-option-item";
+                    const prefix = optionPrefixes[optIdx] ? optionPrefixes[optIdx] : `${String.fromCharCode(65 + optIdx)}.`;
+                    optionItemEl.innerHTML = `${prefix} ${option || ''}`;
+                    optionsListEl.appendChild(optionItemEl);
+                });
+                questionOuterDiv.appendChild(optionsListEl);
+                pdfContentContainer.appendChild(questionOuterDiv);
+            });
+
+            document.body.classList.add('pdf-export-active');
+            document.body.appendChild(pdfContentContainer);
+
+            const filename = (currentQuizTitle || "multiple_choice_quiz").replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.pdf';
+
+            const opt = {
+              margin:       [0.75, 0.75, 0.75, 0.75],
+              filename:     filename,
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2, useCORS: true, logging: true }, // Enable logging
+              jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+              pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+
+            html2pdf().set(opt).from(pdfContentContainer).save()
+            .then(() => {
+                 console.log("PDF processing finished for Multiple Choice.");
+            }).catch((error) => {
+                console.error("Error exporting PDF for Multiple Choice:", error);
+                alert("Sorry, there was an error exporting the PDF. Please check the console for details.");
+            }).finally(() => {
+                document.body.removeChild(pdfContentContainer);
+                document.body.classList.remove('pdf-export-active');
+                exportButton.disabled = false;
+                exportButton.textContent = "Export to PDF";
+            });
+        }
+
+        document.getElementById('saveBtn').addEventListener('click', saveQuiz);
+        document.getElementById('presentBtn').addEventListener('click', openPresentMode);
+        document.getElementById('exportPdfBtn').addEventListener('click', exportToPdf);
+        window.addEventListener('load', initializeQuizView);
+    </script>
+</body>
+</html>

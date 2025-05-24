@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(to right, #8D72E1, #e0b7fc);
+            font-family: Arial, sans-serif;
+            color: #333;
+            /* text-align: center; is handled by .main-content and .container */
+        }
+        .header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 15px 40px;
+          background: linear-gradient(to right, #8D72E1, #6C4AB6);
+          border-bottom: 2px solid white;
+          color: white;
+        }
+
+        .logo-container {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
+
+        .logo {
+          width: 70px;
+          height: auto;
+        }
+
+        .title {
+          font-size: 40px;
+          font-family: fantasy;
+          white-space: nowrap;
+        }
+
+        .main-content { /* Wrapper for the form container */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers the .container horizontally */
+            padding: 20px;
+            min-height: calc(100vh - 100px); /* Adjust based on header height */
+        }
+
+        .container { /* Form container */
+            background: white;
+            padding: 30px 40px;
+            width: 100%;
+            max-width: 420px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: left; /* Align form content to the left */
+        }
+
+        .container h1 { /* Login heading */
+            font-size: 32px;
+            color: #8D72E1;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px; /* Space between each form group (label + input) */
+        }
+
+        .form-group label {
+            display: block; /* Label takes full width, sits above input */
+            font-weight: bold;
+            margin-bottom: 8px; /* Space between label and its input */
+            color: #555;
+            font-size: 16px;
+        }
+            .back-btn {
+      width: 3.125rem;
+      height: auto;
+      cursor: pointer;
+      position: absolute;
+      top: 7.5rem;
+      left: 1.25rem;
+    }
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] /* General styling for text inputs */ {
+            width: 100%; /* Inputs take full width */
+            padding: 12px 15px;
+            border: 2px solid #DDD;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #8D72E1;
+            box-shadow: 0 0 0 2px rgba(141, 114, 225, 0.2);
+        }
+
+        input[type="submit"] { /* Styling for the submit button */
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            background-color: #8D72E1;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%; /* Button takes full width */
+            margin-top: 15px; /* Space above button */
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        input[type="submit"]:active {
+            transform: translateY(1px);
+        }
+
+        input[type="submit"]:hover {
+            background-color: #6C4AB6;
+        }
+
+        .error-message-placeholder { /* For JS alert, or if you add PHP error display later */
+            color: red;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+            min-height: 20px; /* Reserve space */
+        }
+
+        .signup-link {
+            margin-top: 20px;
+            font-size: 15px;
+            color: #555;
+            text-align: center;
+        }
+        .signup-link a {
+            color: #6C4AB6;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 20px;
+            }
+            .title {
+                font-size: 30px;
+            }
+            .logo {
+                width: 60px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                gap: 5px;
+                text-align: center;
+                padding: 10px 15px;
+            }
+            .logo-container {
+                justify-content: center;
+            }
+            .title {
+                font-size: 30px;
+            }
+            .main-content {
+                 min-height: calc(100vh - 120px);
+            }
+            .container {
+                padding: 25px 20px;
+                margin-top: 30px;
+                margin-bottom: 30px;
+                width: 90%;
+            }
+
+            .container h1 {
+                font-size: 28px;
+            }
+
+            input[type="email"],
+            input[type="password"],
+            input[type="submit"] {
+                font-size: 15px;
+            }
+        }
+    </style>
+    <script>
+function goBack() {
+  window.history.back();
+}
+        // Show an alert if there's an error in the URL (from login.php)
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has("error")) {
+                alert(urlParams.get("error")); // Show the error message
+
+                // Remove error from the URL to prevent it from showing on reload
+                let newUrl = window.location.pathname;
+                let firstParam = true;
+                urlParams.forEach((value, key) => {
+                    if (key !== "error") { // Remove only 'error'
+                        newUrl += (firstParam ? "?" : "&") + key + "=" + encodeURIComponent(value);
+                        firstParam = false;
+                    }
+                });
+                window.history.replaceState(null, "", newUrl);
+            }
+
+            // Auto-fill login form if data is stored in localStorage
+            const emailInput = document.getElementById("email");
+            const passwordInput = document.getElementById("password");
+
+            const savedEmail = localStorage.getItem("userEmail");
+            // SECURITY WARNING: Storing passwords in localStorage is generally not recommended.
+            const savedPassword = localStorage.getItem("userPassword");
+
+            if (emailInput && savedEmail) {
+                emailInput.value = savedEmail;
+            }
+
+            if (passwordInput && savedPassword) {
+                passwordInput.value = savedPassword;
+            }
+        };
+        function clearSignupForm() {
+    // Assuming your form has the id="signup-form"
+    // and your input fields have the ids: fullname, email, password
+    // and your message div has the id: message
+
+    document.getElementById("signup-form").reset(); // This is the simplest way to clear a form
+
+    // Or, if you want to clear them individually:
+    // document.getElementById("fullname").value = "";
+    // document.getElementById("email").value = "";
+    // document.getElementById("password").value = "";
+
+    // Also, clear any previous messages
+    const messageDiv = document.getElementById("message");
+    if (messageDiv) {
+        messageDiv.innerHTML = "";
+    }
+}
+    </script>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-container">
+          <img src="logo.ico" alt="Logo" class="logo" /> <!-- Ensure logo.ico is in the correct path -->
+          <span class="title">QUIZZLER</span>
+        </div>
+    </div>
+  <img src="backbtn.png" alt="Back" class="back-btn" onclick="goBack()" />
+    <div class="main-content">
+        <form action="login.php" method="POST" class="container">
+            <h1>Login</h1>
+
+            <!-- Optional placeholder for PHP-driven error messages if you add them later -->
+            <div class="error-message-placeholder"></div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required/>
+            </div>
+
+            <div> <!-- This div implicitly becomes a form-group for the button due to margin-top on submit -->
+                <input type="submit" value="Login"/>
+            </div>
+
+            <p class="signup-link">
+                Don't have an account? <a href="signup.html">Sign up here</a> <!-- Adjust link if needed -->
+            </p>
+        </form>
+    </div>
+
+</body>
+</html>
